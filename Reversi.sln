@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi", "Reversi\Reversi.csproj", "{B58C442B-D19E-41BA-A57C-A5FBE8E318EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi.UI.Tests", "Reversi.UI.Tests\Reversi.UI.Tests.csproj", "{FF4CE066-17F8-48D2-83C6-FF911FE25A0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi.Engine", "Reversi.Engine\Reversi.Engine.csproj", "{32579CC6-1B17-4534-A4E5-C55BA725D6EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi.Engine.Tests", "Reversi.Engine.Tests\Reversi.Engine.Tests.csproj", "{CE28BBAA-40FE-4568-92F2-4AF3451CC119}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B58C442B-D19E-41BA-A57C-A5FBE8E318EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B58C442B-D19E-41BA-A57C-A5FBE8E318EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B58C442B-D19E-41BA-A57C-A5FBE8E318EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B58C442B-D19E-41BA-A57C-A5FBE8E318EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF4CE066-17F8-48D2-83C6-FF911FE25A0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF4CE066-17F8-48D2-83C6-FF911FE25A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF4CE066-17F8-48D2-83C6-FF911FE25A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF4CE066-17F8-48D2-83C6-FF911FE25A0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32579CC6-1B17-4534-A4E5-C55BA725D6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32579CC6-1B17-4534-A4E5-C55BA725D6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32579CC6-1B17-4534-A4E5-C55BA725D6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32579CC6-1B17-4534-A4E5-C55BA725D6EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
