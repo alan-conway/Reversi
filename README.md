@@ -1,8 +1,8 @@
-## Reversi  
-[![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)
-
+## [Reversi](https://github.com/alan-conway/Reversi)
 Building reversi with TDD  
-###### #TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async   
+`#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async`
+
+[![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
 
 The plan for this project is to explore building some AI logic to win games without any human input.  
 Before I get to that, I will first build a game engine and a GUI that will allow a human to play against the computer without building much smarts into it.  
@@ -15,14 +15,17 @@ There are 3 main parts to this solution at the moment:
 
 It's unusual to list the tests first but it feels appropriate here because this project is following TDD, so a quick look there before the other components of the project...
 
-#### _Tests_  
-###### #TDD #xUnit #Moq #TPL #async #ExtensionMethods
+
+### _Tests:_  
+`#TDD #xUnit #Moq #TPL #async #ExtensionMethods`  
+
 The tests in this project are written using xUnit and Moq, both of which I recommend.  
 I've made frequent use of xUnit's support of _parameterised_ tests through its `[Theory] [InlineData(..)]` attributes.  
 For the `GameEngine`, there were times when I wanted to pass various different types of mocked objects into its constructor, and to avoid repeating myself too much throughout the tests, I opted to use a _fluent builder_.  
 By 'builder', I am referring to the classical [Builder](https://en.wikipedia.org/wiki/Builder_pattern) design pattern from [GoF](https://www.amazon.co.uk/dp/0201633612). And by 'fluent', I am referring to a [fluent syntax](https://en.wikipedia.org/wiki/Fluent_interface).  
 An example of the builder and the syntax are as follows:  
-~~~ C#
+
+```
 private IFoo _foo;
 private IBar _bar;
 
@@ -48,20 +51,20 @@ public Obj Build()
 {
 	return new Obj(_foo, _bar);
 }
-~~~
+```
 
 The _fluency_ comes from the fact that the SetFoo and SetBar methods return `this` which allows for the following (fluent-style) syntax when they are being called:
-~~~ C#
+
+```
 Obj obj = myObjBuilder
 			.SetFoo(customFoo)
 			.SetBar(customBar)
 			.Build();
-
-~~~
+```
 
 xUnit also allows us to use the `async` keyword in test method signatures, which is great when we need to `await` the result of a `Task`. Here is an example of such a test to demonstrate:
 
-~~~ C#
+```
 [Fact]
 public async void ShouldUpdateMoveNumber()
 {
@@ -75,12 +78,14 @@ public async void ShouldUpdateMoveNumber()
 	//Assert: Engine should have updated MoveNumber to 2 after processing the move
 	Assert.Equal(2, _engine.MoveNumber);
 }
-~~~
+```
 
 I also wrote an extension method for implementors of INotifyPropertyChanged
 
-#### _Engine_  
-###### #TDD #TPL #async #DependencyInjection
+
+### _Engine:_  
+`#TDD #TPL #async #DependencyInjection`  
+
 The engine is where most of the logic is found. The GUI is there to convey the user's move to the engine and display the results, but it's the engine which processes all the information.  
 The engine only has a few basic tasks:  
 * Create a new game  
@@ -95,12 +100,14 @@ Processing the opponents move results in a `Response` from the engine which cont
 Choosing a move for the engine to make is where the fun will be, but for now it identifies all the possible valid moves and then selects one at random. This also takes place from within an `async` method.   
 
 
-#### _GUI_  
-###### #TDD #WPF #MVVM #Prism #Unity #TPL #async
+### _GUI:_  
+`#TDD #WPF #MVVM #Prism #Unity #TPL #async`  
+
 The GUI is built with WPF using MVVM. It uses Prism for its `EventAggregator` and `DelegateCommand` and Unity for Dependency Injection.  
 The game view is constructed using several view files. There is a separate view for the `Game`, the `Board` and a `Cell`.  
 The Board view uses a `UniformGrid` as a neat way to create a standard game-board look, and has the following XAML structure:
-~~~ XAML
+
+```
 <ItemsControl ItemsSource="{Binding Cells}">
 
 	<ItemsControl.ItemsPanel>
@@ -118,7 +125,7 @@ The Board view uses a `UniformGrid` as a neat way to create a standard game-boar
 	</ItemsControl.ItemTemplate>
 
 </ItemsControl>
-~~~
+```
 
 The Cell view uses an `IValueConverter` to convert the game piece in the cell into the correct `Brush` when drawing the piece as an `Ellipse`.  
 It uses a `MouseBinding` to listen for the user clicking on a cell. Upon such a click, assuming it was on a legal square, a `CellSelectedEvent` is published using the `EventAggregator`. All `CellViewModels` and the `GameViewModel` subscribe to this event, the former to de-select any previously selected cells and the latter to convey the move to the engine.
