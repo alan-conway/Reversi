@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
 namespace Reversi.Engine.Tests.Builders
 {
@@ -12,7 +13,7 @@ namespace Reversi.Engine.Tests.Builders
         private IGameContext _context;
         private ICaptureHelper _captureHelper;
         private IValidMoveFinder _validMoveFinder;
-        private IMoveChooser _moveChooser;
+        private IMoveStrategy _moveStrategy;
         private IGameStatusExaminer _statusExaminer;
 
         public GameEngineBuilder()
@@ -28,8 +29,8 @@ namespace Reversi.Engine.Tests.Builders
             var mockValidMoveFinder = new Mock<IValidMoveFinder>();
             _validMoveFinder = mockValidMoveFinder.Object;
 
-            var mockMoveChooser = new Mock<IMoveChooser>();
-            _moveChooser = mockMoveChooser.Object;
+            var mockMoveStrategy = new Mock<IMoveStrategy>();
+            _moveStrategy = mockMoveStrategy.Object;
 
             var mockStatusExaminer = new Mock<IGameStatusExaminer>();
             _statusExaminer = mockStatusExaminer.Object;
@@ -62,16 +63,16 @@ namespace Reversi.Engine.Tests.Builders
             return this;
         }
 
-        public GameEngineBuilder SetMoveChooser(IMoveChooser moveChooser)
+        public GameEngineBuilder SetMoveStrategy(IMoveStrategy moveStrategy)
         {
-            _moveChooser = moveChooser;
+            _moveStrategy = moveStrategy;
             return this;
         }
 
         public IGameEngine Build()
         {
             return new GameEngine(_context, _captureHelper, 
-                _validMoveFinder, _moveChooser, _statusExaminer);
+                _validMoveFinder, _moveStrategy, _statusExaminer);
         }
 
 

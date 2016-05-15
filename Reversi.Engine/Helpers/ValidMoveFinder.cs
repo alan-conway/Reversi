@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Helpers
 {
     /// <summary>
     /// Determines which moves are valid for the current player

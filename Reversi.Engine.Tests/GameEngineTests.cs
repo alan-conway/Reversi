@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 using Xunit;
 
 namespace Reversi.Engine.Tests
@@ -75,8 +76,8 @@ namespace Reversi.Engine.Tests
             context.SetMovePlayed(); // indicate that it's the engine's turn to play
 
             //engine should play in cell 0:
-            var mockMoveChooser = new Mock<IMoveChooser>();
-            mockMoveChooser.Setup(mc => mc.ChooseMove(It.IsAny<IGameContext>(),
+            var mockMoveStrategy = new Mock<IMoveStrategy>();
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
                 It.IsAny<IValidMoveFinder>())).Returns(new Move(0));
             
             //engine should capture cell 1
@@ -87,7 +88,7 @@ namespace Reversi.Engine.Tests
             var engine = _builder
                 .SetContext(context)
                 .SetCaptureHelper(mockCaptureHelper.Object)
-                .SetMoveChooser(mockMoveChooser.Object)
+                .SetMoveStrategy(mockMoveStrategy.Object)
                 .Build();
 
             //Act
@@ -117,10 +118,10 @@ namespace Reversi.Engine.Tests
         public async void ShouldUpdateMoveNumberAfterReplyingWithEnginesMove()
         {
             //Arrange
-            var mockMoveChooser = new Mock<IMoveChooser>(); //finds engine's replying move
-            mockMoveChooser.Setup(mc => mc.ChooseMove(It.IsAny<IGameContext>(),
+            var mockMoveStrategy = new Mock<IMoveStrategy>(); //finds engine's replying move
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
                 It.IsAny<IValidMoveFinder>())).Returns(Move.PassMove);
-            var engine = _builder.SetMoveChooser(mockMoveChooser.Object).Build();
+            var engine = _builder.SetMoveStrategy(mockMoveStrategy.Object).Build();
             Move move = new Move(34); // represents user's move
             var response = await engine.UpdateBoardAsync(move); // opponent's move
 
@@ -178,8 +179,8 @@ namespace Reversi.Engine.Tests
                 }
             };
 
-            var mockMoveChooser = new Mock<IMoveChooser>();
-            mockMoveChooser.Setup(mc => mc.ChooseMove(
+            var mockMoveStrategy = new Mock<IMoveStrategy>();
+            mockMoveStrategy.Setup(mc => mc.ChooseMove(
                 It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()))
                 .Returns(getWhiteMove(context));
 
@@ -190,7 +191,7 @@ namespace Reversi.Engine.Tests
             //set up engine
             var engine = _builder
                 .SetValidMoveFinder(mockValidMoveFinder.Object)
-                .SetMoveChooser(mockMoveChooser.Object)
+                .SetMoveStrategy(mockMoveStrategy.Object)
                 .SetStatusExaminer(mockStatusExaminer.Object)
                 .Build();
 
@@ -198,8 +199,8 @@ namespace Reversi.Engine.Tests
             await engine.MakeReplyMoveAsync(); // engine's reply
 
             //Assert - should have been called twice
-            mockMoveChooser.Verify(mc => 
-                mc.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()), 
+            mockMoveStrategy.Verify(ms => 
+                ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()), 
                 Times.Exactly(2));
 
             mockValidMoveFinder.Verify(vmf =>

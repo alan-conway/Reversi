@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Helpers
 {
+    /// <summary>
+    /// Identifies squares on the board that form part of a straight line
+    /// from the location given
+    /// </summary>
     public class LocationHelper : ILocationHelper
     {
         public IEnumerable<IEnumerable<int>> GetLocationsGroups(int location)

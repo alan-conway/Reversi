@@ -8,12 +8,14 @@ namespace Reversi.Engine
 {
     public class Move
     {
+        #region PassMove  static property
         private static Move _pass = new Move(-1) { Pass = true };
 
         public static Move PassMove
         {
             get { return _pass; }
         }
+        #endregion
 
         public Move(int cellId)
         {

@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Reversi.Engine.Helpers;
 using Reversi.Engine.Tests.Factories;
 using System;
 using System.Collections.Generic;

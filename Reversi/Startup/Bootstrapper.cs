@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
+using Reversi.Engine.Strategy;
+using Reversi.Engine.Helpers;
 
 namespace Reversi.Startup
 {
@@ -23,7 +26,7 @@ namespace Reversi.Startup
             Container.RegisterType<ILocationHelper, LocationHelper>();
             Container.RegisterType<ICaptureHelper, CaptureHelper>();
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();
-            Container.RegisterType<IMoveChooser, MoveChooserRandom>();
+            Container.RegisterType<IMoveStrategy, RandomMoveStrategy>();
             Container.RegisterType<IGameStatusExaminer, GameStatusExaminer>();
             Container.RegisterType<IGameEngine, GameEngine>();
             Container.RegisterType<BoardViewModel>();

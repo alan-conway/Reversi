@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Interfaces
 {
     public interface IValidMoveFinder
     {

@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Helpers
 {
+    /// <summary>
+    /// Captures enemy pieces after a move has been played
+    /// </summary>
     public class CaptureHelper : ICaptureHelper
     {
         private ILocationHelper _locationHelper;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Interfaces
 {
     public interface ILocationHelper
     {
@@ -11,9 +11,11 @@ namespace Reversi.Engine
         /// </summary>
         /// <remarks>
         /// Up/Down/Left/Right refers to a board in this layout:
-        /// 00, 01, 02, ..
-        /// 08, 09, 10, ..
-        /// 16, 17, 18, ..
+        /// 00, 01, 02, .. 07
+        /// 08, 09, 10, .. 15
+        /// 16, 17, 18, .. 23
+        /// .., .., .., .. ..
+        /// 56, 57, 58, .. 63
         /// eg, from position 09, UpLeft is 00, DownRight is 18, Left is 08. etc.
         /// </remarks>
         IEnumerable<IEnumerable<int>> GetLocationsGroups(int location);

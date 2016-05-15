@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Strategy
 {
-    public class MoveChooserRandom : IMoveChooser
+    public class RandomMoveStrategy : IMoveStrategy
     {
         /// <summary>
-        /// Finds any random valid move
+        /// Choose any random valid move
         /// </summary>
         public Move ChooseMove(IGameContext context, IValidMoveFinder validMoveFinder)
         {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Reversi.Engine
+namespace Reversi.Engine.Interfaces
 {
-    public interface IMoveChooser
+    public interface IMoveStrategy
     {
         /// <summary>
         /// Choose a move to play (hopefully the best one it can, depending on the 

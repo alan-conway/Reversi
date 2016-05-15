@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reversi.Engine.Interfaces;
 
 namespace Reversi.Engine
 {
@@ -15,19 +16,19 @@ namespace Reversi.Engine
         private IGameContext _context;
         private ICaptureHelper _captureHelper;
         private IValidMoveFinder _validMoveFinder;
-        private IMoveChooser _moveFinder;
+        private IMoveStrategy _moveStrategy;
         private IGameStatusExaminer _statusExaminer;
 
         public GameEngine(IGameContext context,
             ICaptureHelper captureHelper, 
             IValidMoveFinder validMoveFinder,
-            IMoveChooser moveFinder,
+            IMoveStrategy moveStrategy,
             IGameStatusExaminer statusExaminer)
         {
             _context = context;
             _captureHelper = captureHelper;
             _validMoveFinder = validMoveFinder;
-            _moveFinder = moveFinder;
+            _moveStrategy = moveStrategy;
             _statusExaminer = statusExaminer;
         }
 
@@ -95,7 +96,7 @@ namespace Reversi.Engine
         /// <returns>An updated board which reflects any captured pieces</returns>
         private Response MakeReplyMove()
         {
-            var move = _moveFinder.ChooseMove(_context, _validMoveFinder);
+            var move = _moveStrategy.ChooseMove(_context, _validMoveFinder);
             if (!move.Pass)
             {
                 _context[move.LocationPlayed].Piece = _context.CurrentPiece;
