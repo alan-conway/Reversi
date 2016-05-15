@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)
 
 Building reversi with TDD  
-###### #TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async #Reversi
+###### #TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async   
 
 The plan for this project is to explore building some AI logic to win games without any human input.  
 Before I get to that, I will first build a game engine and a GUI that will allow a human to play against the computer without building much smarts into it.  
