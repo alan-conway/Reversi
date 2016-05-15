@@ -4,7 +4,7 @@ Building reversi with TDD
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
 
-The plan for this project is to explore building some AI logic to win games without any human input.  
+The plan for this project is to explore building some AI logic to win games of reversi without any human input.  
 Before I get to that, I will first build a game engine and a GUI that will allow a human to play against the computer without building much smarts into it.  
 The first iteration is to create a game engine that a user can play against, even if the engine isn't unbeatable quite yet. This is now done and if you'd like to play the game, you can do so by fetching the latest build from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from any machine with an up-to-date .net runtime on it.
 
