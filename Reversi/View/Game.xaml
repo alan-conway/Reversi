@@ -24,7 +24,7 @@
         <local:BoardView Grid.Row="1"/>
 
         <TextBlock Grid.Row="2" 
-                   Text="{Binding GameStatus}" 
+                   Text="{Binding StatusMessage}" 
                    FontWeight="Bold"
                    Margin="10 0 0 0"/>
     </Grid>

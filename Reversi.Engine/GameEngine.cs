@@ -47,7 +47,9 @@ namespace Reversi.Engine
             _context[28].Piece = _context[35].Piece = Piece.White;
             
             MarkAnyValidMoves();
-            return new Response(Move.PassMove, _context.Squares);
+            return new Response(Move.PassMove, 
+                _context.Squares,
+                GameStatus.NewGame);
         }
                
         public int MoveNumber {  get { return _context.MoveNumber; } }

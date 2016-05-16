@@ -9,17 +9,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Reversi.Engine.Interfaces;
+using Reversi.MessageDialogs;
 
 namespace Reversi.ViewModel
 {
     public class GameViewModel : ViewModelBase
     {
         private IGameEngine _engine;
-        private string _gameStatus;
+        private GameStatus _gameStatus;
+        private string _statusMessage;
+        private IMessageDialogService _dialogService;
 
-        public GameViewModel(IEventAggregator eventAggregator, IGameEngine engine)
+        public GameViewModel(IEventAggregator eventAggregator, IGameEngine engine, 
+            IMessageDialogService dialogService)
         {
             _engine = engine;
+            _dialogService = dialogService;
+            _gameStatus = GameStatus.NewGame;
             eventAggregator.GetEvent<CellSelectedEvent>().Subscribe(OnCellSelected);
             Board = new BoardViewModel(eventAggregator);
             NewGameCommand = new DelegateCommand(InitialiseNewGame);
@@ -30,14 +36,14 @@ namespace Reversi.ViewModel
 
         public ICommand NewGameCommand { get; }
 
-        public string GameStatus
+        public string StatusMessage
         {
-            get { return _gameStatus; }
+            get { return _statusMessage; }
             set
             {
-                if (_gameStatus != value)
+                if (_statusMessage != value)
                 {
-                    _gameStatus = value;
+                    _statusMessage = value;
                     Notify();
                 }
             }
@@ -45,6 +51,15 @@ namespace Reversi.ViewModel
 
         private void InitialiseNewGame()
         {
+            if (_gameStatus == GameStatus.InProgress)
+            {
+                if (_dialogService.ShowYesNoDialog("New Game",
+                    "Would you like to start a new game?") != DialogChoice.Yes)
+                {
+                    return;
+                }
+            }
+
             Board.Cells.ForEach(c =>
             {
                 c.Piece = Piece.None;
@@ -62,7 +77,7 @@ namespace Reversi.ViewModel
             var response = await _engine.UpdateBoardAsync(move);
             ProcessResponseFromEngine(response);
 
-            if (response.Status == Engine.GameStatus.InProgress)
+            if (response.Status == GameStatus.InProgress)
             {
                 response = await _engine.MakeReplyMoveAsync();
                 ProcessResponseFromEngine(response);
@@ -71,6 +86,7 @@ namespace Reversi.ViewModel
 
         private void ProcessResponseFromEngine(Response response)
         {
+            _gameStatus = response.Status;
             for (int i = 0; i < response.Squares.Length; i++)
             {
                 Board.Cells[i].Piece = response.Squares[i].Piece;
@@ -81,20 +97,25 @@ namespace Reversi.ViewModel
                     Board.Cells[i].IsSelected = (i == response.Move.LocationPlayed);
                 }
             }
-            GameStatus = GetGameStatus(response);
+            StatusMessage = GetStatusMessage(response);
         }
 
-        private string GetGameStatus(Response response)
+        private string GetStatusMessage(Response response)
         {
+            if (response.Status == GameStatus.NewGame)
+            {
+                return string.Empty;
+            }
+
             int blackScore, whiteScore;
             CalculateScores(response, out blackScore, out whiteScore);
             var score = $"Black: {blackScore}  White: {whiteScore}";
 
             switch (response.Status)
             {
-                case Engine.GameStatus.Draw: return $"Game is a draw  ({score})";
-                case Engine.GameStatus.BlackWins: return $"Black wins  ({score})";
-                case Engine.GameStatus.WhiteWins: return $"White wins  ({score})";
+                case GameStatus.Draw: return $"Game is a draw  ({score})";
+                case GameStatus.BlackWins: return $"Black wins  ({score})";
+                case GameStatus.WhiteWins: return $"White wins  ({score})";
                 default: return score;
             }
         }
@@ -105,7 +126,7 @@ namespace Reversi.ViewModel
             whiteScore = response.Squares.Count(s => s.Piece == Piece.White);
 
             // convention is to award the empty squares to the victor
-            if (response.Status != Engine.GameStatus.InProgress)
+            if (response.Status != GameStatus.InProgress)
             {
                 int numEmptySquares = response.Squares.Count(s => s.Piece == Piece.None);
                 if (blackScore > whiteScore)

@@ -8,9 +8,10 @@ namespace Reversi.Engine
 {
     public enum GameStatus
     {
+        NewGame,
+        InProgress,
         BlackWins,
         WhiteWins,
-        Draw,
-        InProgress
+        Draw
     }
 }

@@ -103,6 +103,9 @@
     <Compile Include="Converters\PieceToColourConverter.cs" />
     <Compile Include="Converters\PieceVisibilityConverter.cs" />
     <Compile Include="Events\CellSelectedEvent.cs" />
+    <Compile Include="MessageDialogs\DialogChoice.cs" />
+    <Compile Include="MessageDialogs\IMessageDialogService.cs" />
+    <Compile Include="MessageDialogs\MessageDialogService.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModel\BoardViewModel.cs" />
     <Compile Include="ViewModel\CellViewModel.cs" />

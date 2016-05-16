@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Reversi.Engine.Interfaces;
 using Xunit;
+using Reversi.MessageDialogs;
 
 namespace Reversi.UI.Tests.ViewModel
 {
@@ -21,6 +22,7 @@ namespace Reversi.UI.Tests.ViewModel
         private Mock<IGameEngine> _mockGameEngine;
         private Response _response;
         private Response _responseGameOver;
+        private Mock<IMessageDialogService> _mockDialogService;
 
         public GameViewModelTests()
         {
@@ -35,12 +37,18 @@ namespace Reversi.UI.Tests.ViewModel
                 .Returns(new Response(
                     Move.PassMove,
                     new Square[] 
-                {
-                    new Square() { Piece = Piece.Black },
-                    new Square() { Piece = Piece.None, IsValidMove = true}
-                }));
+                    {
+                        new Square() { Piece = Piece.Black },
+                        new Square() { Piece = Piece.None, IsValidMove = true}
+                    },
+                    GameStatus.NewGame));
 
-            _gameViewModel = new GameViewModel(mockEventAggregator.Object, _mockGameEngine.Object);
+            _mockDialogService = new Mock<IMessageDialogService>();
+            _mockDialogService.Setup(ds => ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(DialogChoice.Yes);
+
+            _gameViewModel = new GameViewModel(mockEventAggregator.Object, 
+                _mockGameEngine.Object, _mockDialogService.Object);
 
             _response = new Response(new Move(0), new Square[] { new Square() });
             _responseGameOver = new Response(new Move(0), new Square[] { new Square() }) { Status = GameStatus.Draw };
@@ -50,7 +58,7 @@ namespace Reversi.UI.Tests.ViewModel
         public void ShouldUpdateBoardWhenNewGameIsStarted()
         {
             //Arrange
-            _gameViewModel.Board.Cells[1].Piece = Piece.White;
+            _gameViewModel.Board.Cells[0].Piece = Piece.White;
             _gameViewModel.Board.Cells[1].Piece = Piece.White;
             
             //Act
@@ -75,7 +83,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Assert
             Assert.False(_gameViewModel.Board.Cells.Any(c => c.IsSelected));
         }
-
+        
         [Fact]
         public void ShouldSubmitMoveToEngineWhenCellSelectedEventIsPublished()
         {
@@ -145,14 +153,17 @@ namespace Reversi.UI.Tests.ViewModel
         }
 
         [Theory]
-        [InlineData(10, 10, GameStatus.InProgress, "Black: 10  White: 10")]
-        [InlineData(15, 5, GameStatus.InProgress, "Black: 15  White: 5")]
-        [InlineData(10, 10, GameStatus.Draw, "Game is a draw  (Black: 10  White: 10)")]
-        [InlineData(15, 5, GameStatus.BlackWins, "Black wins  (Black: 59  White: 5)")]
-        [InlineData(14, 20, GameStatus.WhiteWins, "White wins  (Black: 14  White: 50)")]
-        public void ShouldDisplayCorrectStatusMessage(int numBlackCells, int numWhiteCells, 
+        [InlineData(true, 2, 2, GameStatus.NewGame, "")]
+        [InlineData(false, 10, 10, GameStatus.InProgress, "Black: 10  White: 10")]
+        [InlineData(false, 15, 5, GameStatus.InProgress, "Black: 15  White: 5")]
+        [InlineData(false, 10, 10, GameStatus.Draw, "Game is a draw  (Black: 10  White: 10)")]
+        [InlineData(false, 15, 5, GameStatus.BlackWins, "Black wins  (Black: 59  White: 5)")]
+        [InlineData(false, 14, 20, GameStatus.WhiteWins, "White wins  (Black: 14  White: 50)")]
+        public void ShouldDisplayCorrectStatusMessage(bool newGame,
+            int numBlackCells, int numWhiteCells, 
             GameStatus status, string expectedMessage)
         {
+            //System.Diagnostics.Debugger.Launch();
             //Arrange
             Move move = new Move(0);
 
@@ -176,12 +187,76 @@ namespace Reversi.UI.Tests.ViewModel
                     status)));
 
             //Act
-            _cellSelectedEvent.Publish(move.LocationPlayed);
+            if (newGame)
+            {
+                _gameViewModel.NewGameCommand.Execute(null);
+            }
+            else
+            {
+                _cellSelectedEvent.Publish(move.LocationPlayed);
+            }
 
             //Assert
-            Assert.Equal(expectedMessage, _gameViewModel.GameStatus);
+            Assert.Equal(expectedMessage, _gameViewModel.StatusMessage);
         }
 
+
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void ShouldDisplayYesNoDialogOnlyWhenNewGameIsRequestedMidGame(
+            bool isGameOver, int numExpectedCalls)
+        {
+            //Arrange
+            int cellId = 0;
+            Move move = new Move(cellId);
+
+            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+                .Returns(Task.FromResult(isGameOver ? _responseGameOver : _response));
+
+            _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
+                .Returns(Task.FromResult(isGameOver ? _responseGameOver : _response));
+
+            _cellSelectedEvent.Publish(cellId);
+
+            //Act
+            _gameViewModel.NewGameCommand.Execute(null);
+
+            //Assert
+            _mockDialogService.Verify(ds => 
+                ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()), 
+                Times.Exactly(numExpectedCalls));
+        }
+
+        [Theory]
+        [InlineData(true, 1)]
+        [InlineData(false, 0)]
+        public void ShouldOnlyStartNewGameWhenUserRepliesYesToDialogPrompt(
+            bool userClicksYes, int numExpectedCalls)
+        {
+            //Arrange - put game in progress
+            int cellId = 0;
+            Move move = new Move(cellId);
+
+            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+                .Returns(Task.FromResult(_response));
+
+            _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
+                .Returns(Task.FromResult(_response));
+
+            _mockDialogService.Setup(ds => ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(userClicksYes ? DialogChoice.Yes : DialogChoice.No);
+
+            _cellSelectedEvent.Publish(cellId);
+
+            //Act
+            _gameViewModel.NewGameCommand.Execute(null);
+
+            //Assert
+            // Adding 1 since the first call was already made on construction
+            _mockGameEngine.Verify(ge => ge.CreateNewGame(),
+                Times.Exactly(1 + numExpectedCalls));
+        }
 
 
     }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy;
 using Reversi.Engine.Helpers;
+using Reversi.MessageDialogs;
 
 namespace Reversi.Startup
 {
@@ -23,6 +24,7 @@ namespace Reversi.Startup
             Container.RegisterInstance<IEventAggregator>(new EventAggregator());
             Container.RegisterInstance<IGameContext>(new GameContext());
 
+            Container.RegisterType<IMessageDialogService, MessageDialogService>();
             Container.RegisterType<ILocationHelper, LocationHelper>();
             Container.RegisterType<ICaptureHelper, CaptureHelper>();
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();
