@@ -23,8 +23,9 @@ namespace Reversi.Startup
 
             Container.RegisterInstance<IEventAggregator>(new EventAggregator());
             Container.RegisterInstance<IGameContext>(new GameContext());
+            Container.RegisterInstance<IRandomiser>(new Randomiser());
 
-            Container.RegisterType<IMessageDialogService, MessageDialogService>();
+            Container.RegisterType<IMessageDialogService, MessageDialogService>();            
             Container.RegisterType<ILocationHelper, LocationHelper>();
             Container.RegisterType<ICaptureHelper, CaptureHelper>();
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();

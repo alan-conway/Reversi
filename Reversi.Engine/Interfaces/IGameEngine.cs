@@ -24,13 +24,28 @@ namespace Reversi.Engine.Interfaces
         /// </summary>
         /// <param name="move">The move made by the opponent</param>
         /// <returns>The board with enemy pieces approproately captured following the move</returns>
-        Task<Response> UpdateBoardAsync(Move move);
+        Task<Response> UpdateBoardWithMoveAsync(Move move);
+
+        /// <summary>
+        /// Returns (synchronously) an updated board with the specified move
+        /// </summary>
+        /// <param name="move">The move made by the opponent</param>
+        /// <param name="context">The context to update with the result of the move</param>
+        /// <returns>The board with enemy pieces approproately captured following the move</returns>
+        Response UpdateBoardWithMove(Move move, IGameContext context);
 
         /// <summary>
         /// Returns (asynchronously) an updated board with the engine's move
         /// </summary>
         /// <returns>The board with enemy pieces approproately captured following the move</returns>
         Task<Response> MakeReplyMoveAsync();
+
+        /// <summary>
+        /// Returns (synchronously) an updated board with the engine's move
+        /// </summary>
+        /// <param name="context">The context to update with the result of the move</param>
+        /// <returns>The board with enemy pieces approproately captured following the move</returns>
+        Response MakeReplyMove(IGameContext context);
 
         /// <summary>
         /// The number of the current move

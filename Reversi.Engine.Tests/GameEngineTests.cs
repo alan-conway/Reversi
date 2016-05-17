@@ -48,7 +48,7 @@ namespace Reversi.Engine.Tests
             Move move = new Move(34);
 
             //Act
-            var response = await _engine.UpdateBoardAsync(move);
+            var response = await _engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
             Assert.True(response.Squares.All(s => !s.IsValidMove));
@@ -62,7 +62,7 @@ namespace Reversi.Engine.Tests
             Move move = new Move(34);
 
             //Act
-            var response = await _engine.UpdateBoardAsync(move);
+            var response = await _engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
             Assert.Equal(Piece.Black, response.Squares[34].Piece);
@@ -77,8 +77,9 @@ namespace Reversi.Engine.Tests
 
             //engine should play in cell 0:
             var mockMoveStrategy = new Mock<IMoveStrategy>();
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
-                It.IsAny<IValidMoveFinder>())).Returns(new Move(0));
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameEngine>(), 
+                It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()))
+                .Returns(new Move(0));
             
             //engine should capture cell 1
             var mockCaptureHelper = new Mock<ICaptureHelper>();
@@ -108,7 +109,7 @@ namespace Reversi.Engine.Tests
             Move move = new Move(34);
 
             //Act
-            var response = await _engine.UpdateBoardAsync(move);
+            var response = await _engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
             Assert.Equal(2, _engine.MoveNumber);
@@ -119,11 +120,12 @@ namespace Reversi.Engine.Tests
         {
             //Arrange
             var mockMoveStrategy = new Mock<IMoveStrategy>(); //finds engine's replying move
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
-                It.IsAny<IValidMoveFinder>())).Returns(Move.PassMove);
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameEngine>(), 
+                It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()))
+                .Returns(Move.PassMove);
             var engine = _builder.SetMoveStrategy(mockMoveStrategy.Object).Build();
             Move move = new Move(34); // represents user's move
-            var response = await engine.UpdateBoardAsync(move); // opponent's move
+            var response = await engine.UpdateBoardWithMoveAsync(move); // opponent's move
 
             //Act
             await engine.MakeReplyMoveAsync(); // engine's reply
@@ -149,7 +151,7 @@ namespace Reversi.Engine.Tests
             Move move = new Move(34);
 
             //Act
-            var response = await engine.UpdateBoardAsync(move);
+            var response = await engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
             Assert.Equal(gameStatus, response.Status);
@@ -180,7 +182,7 @@ namespace Reversi.Engine.Tests
             };
 
             var mockMoveStrategy = new Mock<IMoveStrategy>();
-            mockMoveStrategy.Setup(mc => mc.ChooseMove(
+            mockMoveStrategy.Setup(mc => mc.ChooseMove(It.IsAny<IGameEngine>(),
                 It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()))
                 .Returns(getWhiteMove(context));
 
@@ -200,15 +202,72 @@ namespace Reversi.Engine.Tests
 
             //Assert - should have been called twice
             mockMoveStrategy.Verify(ms => 
-                ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()), 
+                ms.ChooseMove(It.IsAny<IGameEngine>(), It.IsAny<IGameContext>(), 
+                    It.IsAny<IValidMoveFinder>()), 
                 Times.Exactly(2));
 
             mockValidMoveFinder.Verify(vmf =>
                 vmf.FindAllValidMoves(It.IsAny<IGameContext>()), 
                 Times.Exactly(2));
-
         }
-        
+
+        [Fact]
+        public void ShouldUpdateContextSuppliedWhenUpdatingBoardWithMove()
+        {
+            //Arrange
+            var externalContext = new GameContext();
+            //move1:
+            externalContext[0].Piece = Piece.Black;
+            externalContext.SetMovePlayed();
+            //move2:
+            externalContext[1].Piece = Piece.White;
+            externalContext.SetMovePlayed();
+            //move3 - to be played in the call to the engine:
+            var move = new Move(2);
+
+            //Act
+            _engine.UpdateBoardWithMove(move, externalContext);
+
+            //Assert 
+            // external context should now be on move 4
+            Assert.Equal(4, externalContext.MoveNumber);
+            Assert.Equal(Piece.Black, externalContext[0].Piece);
+            // engine's internal context should be unchanged from start of game
+            Assert.Equal(1, _engine.Context.MoveNumber);
+            Assert.Equal(Piece.None, _engine.Context[0].Piece);
+        }
+
+        [Fact]
+        public void ShouldUpdateContextSuppliedWhenReplyingWithEnginesMove()
+        {
+            //Arrange
+            var externalContext = new GameContext();
+            //move1:
+            externalContext[0].Piece = Piece.Black;
+            externalContext.SetMovePlayed();
+
+            var mockMoveStrategy = new Mock<IMoveStrategy>();
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameEngine>(),
+                It.IsAny<IGameContext>(), It.IsAny<IValidMoveFinder>()))
+                .Returns(new Move(1));
+
+            var engine = _builder
+                .SetMoveStrategy(mockMoveStrategy.Object)
+                .SetContext(new GameContext())
+                .Build();
+
+            //Act
+            engine.MakeReplyMove(externalContext); // this will be move 2
+
+            //Assert 
+            // external context should now be on move 3
+            Assert.Equal(3, externalContext.MoveNumber);
+            Assert.Equal(Piece.Black, externalContext[0].Piece);
+            // engine's internal context should be unchanged from start of game
+            Assert.Equal(1, engine.Context.MoveNumber);
+            Assert.Equal(Piece.None, engine.Context[0].Piece);
+        }
+
 
     }
 }

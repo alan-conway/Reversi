@@ -62,7 +62,7 @@ namespace Reversi.Engine
         {
             return new GameContext()
             {
-                Squares = this.Squares,
+                Squares = Squares.Select(s => s.Clone()).ToArray(),
                 MoveNumber = this.MoveNumber
             };
         }

@@ -21,6 +21,14 @@ namespace Reversi.Engine
         /// </summary>
         public bool IsValidMove { get; set; } 
 
+        public Square Clone()
+        {
+            return new Square()
+            {
+                Piece = this.Piece,
+                IsValidMove = this.IsValidMove
+            };
+        }
 
         public override string ToString()
         {

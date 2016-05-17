@@ -74,7 +74,7 @@ namespace Reversi.ViewModel
         private async void OnCellSelected(int cellId)
         {
             var move = new Move(cellId);
-            var response = await _engine.UpdateBoardAsync(move);
+            var response = await _engine.UpdateBoardWithMoveAsync(move);
             ProcessResponseFromEngine(response);
 
             if (response.Status == GameStatus.InProgress)

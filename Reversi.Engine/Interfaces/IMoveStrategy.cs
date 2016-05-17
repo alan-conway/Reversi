@@ -8,6 +8,6 @@ namespace Reversi.Engine.Interfaces
         /// Choose a move to play (hopefully the best one it can, depending on the 
         /// algorithm) 
         /// </summary>
-        Move ChooseMove(IGameContext context, IValidMoveFinder validMoveFinder);
+        Move ChooseMove(IGameEngine engine, IGameContext context, IValidMoveFinder validMoveFinder);
     }
 }

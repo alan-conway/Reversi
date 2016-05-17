@@ -91,7 +91,7 @@ namespace Reversi.UI.Tests.ViewModel
             int cellId = 123;
             Move move = new Move(cellId);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                    .Returns(Task.FromResult(_response));
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
@@ -102,7 +102,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             //Assert
             _mockGameEngine.Verify(ge => 
-                ge.UpdateBoardAsync(
+                ge.UpdateBoardWithMoveAsync(
                     It.Is<Move>(m => m.LocationPlayed == move.LocationPlayed)),
                     Times.Once);
         }
@@ -116,7 +116,7 @@ namespace Reversi.UI.Tests.ViewModel
             int cellId = 123;
             Move move = new Move(cellId);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                 .Returns(Task.FromResult(isGameOver ? _responseGameOver : _response));
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
@@ -136,7 +136,7 @@ namespace Reversi.UI.Tests.ViewModel
             int cellId = 1;
             Move move = new Move(cellId);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                 .Returns(Task.FromResult(new Response(move,new Square[0])));
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
@@ -167,7 +167,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Arrange
             Move move = new Move(0);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                 .Returns(Task.FromResult(new Response(move, new Square[0])));
 
             var squares = Enumerable.Range(0,64).Select(x => new Square()).ToArray();
@@ -211,7 +211,7 @@ namespace Reversi.UI.Tests.ViewModel
             int cellId = 0;
             Move move = new Move(cellId);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                 .Returns(Task.FromResult(isGameOver ? _responseGameOver : _response));
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
@@ -238,7 +238,7 @@ namespace Reversi.UI.Tests.ViewModel
             int cellId = 0;
             Move move = new Move(cellId);
 
-            _mockGameEngine.Setup(ge => ge.UpdateBoardAsync(It.IsAny<Move>()))
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
                 .Returns(Task.FromResult(_response));
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())

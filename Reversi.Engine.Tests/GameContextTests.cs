@@ -76,5 +76,36 @@ namespace Reversi.Engine.Tests
             Assert.False(context.Squares.Any(s => s.IsValidMove));
         }
 
+        [Fact]
+        public void ShouldCreateDeepCopyOnClone()
+        {
+            //Arrange
+            var context1 = new GameContext();
+            context1[0].Piece = Piece.Black;
+            context1[10].IsValidMove = true;
+            context1.SetMovePlayed();
+
+            context1[1].Piece = Piece.White;
+            context1[11].IsValidMove = true;
+            context1.SetMovePlayed();
+
+            //Act
+            var context2 = context1.Clone();
+            context2[0].Piece = Piece.White;
+            context2[2].Piece = Piece.White;
+            context2.SetMovePlayed();
+
+            //Assert
+            Assert.NotEqual(context1.MoveNumber, context2.MoveNumber);
+            Assert.NotEqual(context1[0].Piece, context2[0].Piece);
+            Assert.NotEqual(context1[2].Piece, context2[2].Piece);
+            Assert.Equal(3, context1.MoveNumber);
+            Assert.Equal(4, context2.MoveNumber);
+            Assert.Equal(context1[1].Piece, context2[1].Piece);
+            Assert.Equal(context1[10].IsValidMove, context2[10].IsValidMove);
+
+
+        }
+
     }
 }

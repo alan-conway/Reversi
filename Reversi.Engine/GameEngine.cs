@@ -59,9 +59,29 @@ namespace Reversi.Engine
         /// </summary>
         /// <param name="move">The move played</param>
         /// <returns>The updated board, having played the move submitted</returns>
-        public async Task<Response> UpdateBoardAsync(Move move)
+        public async Task<Response> UpdateBoardWithMoveAsync(Move move)
         {
-            return await Task.Run(() => UpdateBoardWithMove(move));            
+            return await Task.Run(() => UpdateBoardWithMove(move, _context));            
+        }
+
+        /// <summary>
+        /// Update the game to reflect the opponents move
+        /// </summary>
+        /// <param name="move">The move made by the opponent</param>
+        /// <param name="context">The context to update when making the move</param>
+        /// <returns>An updated board which reflects pieces captured by the opponent</returns>
+        public Response UpdateBoardWithMove(Move move, IGameContext context)
+        {
+            if (!move.Pass)
+            {
+                context[move.LocationPlayed].Piece = context.CurrentPiece;
+                _captureHelper.CaptureEnemyPieces(context, move.LocationPlayed);
+            }
+            context.SetAllInvalid();
+            context.SetMovePlayed();
+
+            var status = _statusExaminer.DetermineGameStatus(context);
+            return new Response(move, context.Squares, status);
         }
 
         /// <summary>
@@ -70,57 +90,39 @@ namespace Reversi.Engine
         /// <returns>The updated board containing the engine's move</returns>
         public async Task<Response> MakeReplyMoveAsync()
         {
-            return await Task.Run(() => MakeReplyMove());
-        }
-
-        /// <summary>
-        /// Update the game to reflect the opponents move
-        /// </summary>
-        /// <param name="move">The move made by the opponent</param>
-        /// <returns>An updated board which reflects pieces captured by the opponent</returns>
-        private Response UpdateBoardWithMove(Move move)
-        {
-            if (!move.Pass)
-            {
-                _context[move.LocationPlayed].Piece = _context.CurrentPiece;
-                _captureHelper.CaptureEnemyPieces(_context, move.LocationPlayed);
-            }
-            _context.SetAllInvalid();
-            _context.SetMovePlayed();
-
-            var status = _statusExaminer.DetermineGameStatus(_context);
-            return new Response(move, _context.Squares, status);
+            return await Task.Run(() => MakeReplyMove(_context));
         }
 
         /// <summary>
         /// Makes a move in reply to the opponent
         /// </summary>
+        /// <param name="context">The context to update when making the replying move</param>
         /// <returns>An updated board which reflects any captured pieces</returns>
-        private Response MakeReplyMove()
+        public Response MakeReplyMove(IGameContext context)
         {
-            var move = _moveStrategy.ChooseMove(_context, _validMoveFinder);
+            var move = _moveStrategy.ChooseMove(this, context, _validMoveFinder);
             if (!move.Pass)
             {
-                _context[move.LocationPlayed].Piece = _context.CurrentPiece;
-                _captureHelper.CaptureEnemyPieces(_context, move.LocationPlayed);
+                _context[move.LocationPlayed].Piece = context.CurrentPiece;
+                _captureHelper.CaptureEnemyPieces(context, move.LocationPlayed);
             }
 
-            _context.SetMovePlayed();
+            context.SetMovePlayed();
 
-            var validSubsequentMoves = _validMoveFinder.FindAllValidMoves(_context);
+            var validSubsequentMoves = _validMoveFinder.FindAllValidMoves(context);
             MarkAnyValidMoves();
 
-            var status = _statusExaminer.DetermineGameStatus(_context);
+            var status = _statusExaminer.DetermineGameStatus(context);
 
             if (!validSubsequentMoves.Any() && status == GameStatus.InProgress)
             {
                 // opponent has no valid moves but game is not over:
                 _context.SetMovePlayed(); // auto-skip opponents move
-                return MakeReplyMove(); // play another move (recursively)                
+                return MakeReplyMove(context); // play another move (recursively)                
             }
             else
             {
-                return new Response(move, _context.Squares, status);
+                return new Response(move, context.Squares, status);
             }
         }
         

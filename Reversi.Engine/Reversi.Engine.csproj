@@ -51,11 +51,14 @@
     <Compile Include="Interfaces\IGameStatusExaminer.cs" />
     <Compile Include="Interfaces\ILocationHelper.cs" />
     <Compile Include="Interfaces\IMoveStrategy.cs" />
+    <Compile Include="Interfaces\IRandomiser.cs" />
+    <Compile Include="Interfaces\IRandomMoveStrategy.cs" />
     <Compile Include="Interfaces\IValidMoveFinder.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Piece.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Randomiser.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Square.cs" />
     <Compile Include="Strategy\RandomMoveStrategy.cs" />
