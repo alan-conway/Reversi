@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Core;
 
 namespace Reversi.Engine.Helpers
 {
@@ -55,7 +56,7 @@ namespace Reversi.Engine.Helpers
                 {
                     foreach (int enemyLoc in enemyLocations)
                     {
-                        context[enemyLoc].Piece = piece;
+                        context.SetPiece(enemyLoc, piece);
                     }
                 }
             }

@@ -13,7 +13,26 @@ namespace Reversi.Engine.Helpers
     /// </summary>
     public class LocationHelper : ILocationHelper
     {
-        public IEnumerable<IEnumerable<int>> GetLocationsGroups(int location)
+        private Dictionary<int, int[][]> _cache;
+
+        public LocationHelper()
+        {
+            _cache = new Dictionary<int, int[][]>();
+            for(int i = 0; i < 64; i++)
+            {
+                var values = GetLocationsGroupsNoCache(i)
+                    .Select(enumerable => enumerable.ToArray()).ToArray();
+
+                _cache.Add(i, values);
+            }
+
+        }
+        public int[][] GetLocationsGroups(int location)
+        {
+            return _cache[location];
+        }
+
+        public IEnumerable<IEnumerable<int>> GetLocationsGroupsNoCache(int location)
         {
             return new[] {
                 GetLocationsUp(location),

@@ -9,7 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Reversi.Engine.Interfaces;
-using Reversi.MessageDialogs;
+using Reversi.Services.MessageDialogs;
+using Reversi.Engine.Core;
+using Reversi.Services;
 
 namespace Reversi.ViewModel
 {
@@ -19,12 +21,14 @@ namespace Reversi.ViewModel
         private GameStatus _gameStatus;
         private string _statusMessage;
         private IMessageDialogService _dialogService;
+        private IStatusMessageFormatter _statusMsgFormatter;
 
         public GameViewModel(IEventAggregator eventAggregator, IGameEngine engine, 
-            IMessageDialogService dialogService)
+            IMessageDialogService dialogService, IStatusMessageFormatter statusMsgFormatter)
         {
             _engine = engine;
             _dialogService = dialogService;
+            _statusMsgFormatter = statusMsgFormatter;
             _gameStatus = GameStatus.NewGame;
             eventAggregator.GetEvent<CellSelectedEvent>().Subscribe(OnCellSelected);
             Board = new BoardViewModel(eventAggregator);
@@ -71,6 +75,16 @@ namespace Reversi.ViewModel
             ProcessResponseFromEngine(response);
         }
 
+        /// <summary>
+        /// Represents the user having played a move
+        /// </summary>
+        /// <param name="cellId">the location of the move played</param>
+        /// <remarks>
+        /// Requests the engine to respond with the result of the users move, to
+        /// show the pieces captured. This async response is awaited so that the 
+        /// application remains responsive in the meantime.
+        /// Similarly, the engines replying move is requested in the same manner.
+        /// </remarks>
         private async void OnCellSelected(int cellId)
         {
             var move = new Move(cellId);
@@ -84,6 +98,10 @@ namespace Reversi.ViewModel
             }            
         }
 
+        /// <summary>
+        /// Updates the board according to the response from the engine
+        /// </summary>
+        /// <param name="response"></param>
         private void ProcessResponseFromEngine(Response response)
         {
             _gameStatus = response.Status;
@@ -97,47 +115,11 @@ namespace Reversi.ViewModel
                     Board.Cells[i].IsSelected = (i == response.Move.LocationPlayed);
                 }
             }
-            StatusMessage = GetStatusMessage(response);
+            StatusMessage = _statusMsgFormatter.GetStatusMessage(response.Status, response.Squares);
         }
 
-        private string GetStatusMessage(Response response)
-        {
-            if (response.Status == GameStatus.NewGame)
-            {
-                return string.Empty;
-            }
+        
 
-            int blackScore, whiteScore;
-            CalculateScores(response, out blackScore, out whiteScore);
-            var score = $"Black: {blackScore}  White: {whiteScore}";
-
-            switch (response.Status)
-            {
-                case GameStatus.Draw: return $"Game is a draw  ({score})";
-                case GameStatus.BlackWins: return $"Black wins  ({score})";
-                case GameStatus.WhiteWins: return $"White wins  ({score})";
-                default: return score;
-            }
-        }
-
-        private void CalculateScores(Response response, out int blackScore, out int whiteScore)
-        {
-            blackScore = response.Squares.Count(s => s.Piece == Piece.Black);
-            whiteScore = response.Squares.Count(s => s.Piece == Piece.White);
-
-            // convention is to award the empty squares to the victor
-            if (response.Status != GameStatus.InProgress)
-            {
-                int numEmptySquares = response.Squares.Count(s => s.Piece == Piece.None);
-                if (blackScore > whiteScore)
-                {
-                    blackScore += numEmptySquares;
-                }
-                else if (whiteScore > blackScore)
-                {
-                    whiteScore += numEmptySquares;
-                }
-            }
-        }
+       
     }
 }

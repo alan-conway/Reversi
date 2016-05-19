@@ -73,25 +73,37 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Builders\GameEngineBuilder.cs" />
-    <Compile Include="CaptureHelperTests.cs" />
+    <Compile Include="Core\GameContextTests.cs" />
+    <Compile Include="Core\GameEngineTests.cs" />
     <Compile Include="Factories\GameContextFactory.cs" />
-    <Compile Include="GameContextTests.cs" />
-    <Compile Include="GameEngineTests.cs" />
-    <Compile Include="GameStatusExaminerTests.cs" />
-    <Compile Include="LocationHelperTests.cs" />
+    <Compile Include="Helpers\CaptureHelperTests.cs" />
+    <Compile Include="Helpers\GameStatusExaminerTests.cs" />
+    <Compile Include="Helpers\LocationHelperTests.cs" />
+    <Compile Include="Helpers\ValidMoveFinderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strategy\RandomMoveStrategyTests.cs" />
-    <Compile Include="ValidMoveFinderTests.cs" />
+    <Compile Include="Strategy\Minimax\Heuristics\CornerHeuristicTests.cs" />
+    <Compile Include="Strategy\Minimax\Heuristics\MobilityHeuristicTests.cs" />
+    <Compile Include="Strategy\Minimax\MinimaxMoveStrategyTests.cs" />
+    <Compile Include="Strategy\Minimax\MoveOrderingTests.cs" />
+    <Compile Include="Strategy\Minimax\ReversiScoreProviderTests.cs" />
+    <Compile Include="Strategy\Minimax\ReversiTreeNodeBuilderTests.cs" />
+    <Compile Include="Strategy\Minimax\ReversiTreeNodeTests.cs" />
+    <Compile Include="Strategy\Random\RandomMoveStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Game.Search\Game.Search.csproj">
+      <Project>{cb6147b0-539a-4881-ab8b-740552acb095}</Project>
+      <Name>Game.Search</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reversi.Engine\Reversi.Engine.csproj">
       <Project>{32579cc6-1b17-4534-a4e5-c55ba725d6ef}</Project>
       <Name>Reversi.Engine</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -18,7 +18,7 @@ namespace Reversi.Engine.Interfaces
         /// 56, 57, 58, .. 63
         /// eg, from position 09, UpLeft is 00, DownRight is 18, Left is 08. etc.
         /// </remarks>
-        IEnumerable<IEnumerable<int>> GetLocationsGroups(int location);
+        int[][] GetLocationsGroups(int location);
 
         IEnumerable<int> GetLocationsDown(int moveLocation);
         IEnumerable<int> GetLocationsDownLeft(int moveLocation);

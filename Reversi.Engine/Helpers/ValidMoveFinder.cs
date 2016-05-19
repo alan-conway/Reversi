@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Core;
 
 namespace Reversi.Engine.Helpers
 {
@@ -21,16 +22,33 @@ namespace Reversi.Engine.Helpers
 
         public bool IsValidMove(IGameContext context, int location)
         {
+            return IsValidMove(context, location, context.CurrentPiece);
+        }
+
+        public bool IsValidMove(IGameContext context, int location, Piece relativePiece)
+        {
             if (context[location].Piece == Piece.None)
             {
+                Piece current = relativePiece;
+                Piece enemy = relativePiece == Piece.Black ? Piece.White : Piece.Black;
+
                 foreach (var relatedSquares in _locationHelper.GetLocationsGroups(location))
                 {
-                    var enemySquares = relatedSquares.TakeWhile(l => context[l].Piece == context.EnemyPiece);
-                    if (enemySquares.Any() &&
-                        enemySquares.Count() < relatedSquares.Count() &&
-                        context[relatedSquares.ElementAt(enemySquares.Count())].Piece == context.CurrentPiece)
+                    if (relatedSquares.Length == 0 || context[relatedSquares[0]].Piece != enemy)
                     {
-                        return true;
+                        continue;
+                    }
+                    
+                    for(int i = 1; i < relatedSquares.Length; i++)
+                    {
+                        if (context[relatedSquares[i]].Piece == Piece.None)
+                        {
+                            break;
+                        } 
+                        else if (context[relatedSquares[i]].Piece == current)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -39,8 +57,13 @@ namespace Reversi.Engine.Helpers
 
         public IEnumerable<int> FindAllValidMoves(IGameContext context)
         {
+            return FindAllValidMoves(context, context.CurrentPiece);
+        }
+
+        public IEnumerable<int> FindAllValidMoves(IGameContext context, Piece relativePiece)
+        {
             return Enumerable.Range(0, 64).Where(
-                loc => context[loc].Piece == Piece.None && IsValidMove(context, loc));
+                loc => context[loc].Piece == Piece.None && IsValidMove(context, loc, relativePiece));
         }
 
         public bool IsAnyMoveValid(IGameContext context)
@@ -48,5 +71,7 @@ namespace Reversi.Engine.Helpers
             return Enumerable.Range(0, 64).Any(
                 loc => context[loc].Piece == Piece.None && IsValidMove(context, loc));
         }
+
+
     }
 }

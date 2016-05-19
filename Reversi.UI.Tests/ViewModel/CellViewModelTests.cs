@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Reversi.UI.Tests.Extensions;
 using Reversi.Engine;
+using Reversi.Engine.Core;
 
 namespace Reversi.UI.Tests.ViewModel
 {

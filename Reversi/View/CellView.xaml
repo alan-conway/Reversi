@@ -12,7 +12,7 @@
         <conv:PieceToColourConverter x:Key="PieceStrokeColourConverter"                     
                                      BrushForBlack="Black"
                                      BrushForWhite="Black"/>
-        <conv:PieceVisibilityConverter x:Key="PieceVisibilityConverter"/>
+        <conv:PieceToVisibilityConverter x:Key="PieceVisibilityConverter"/>
     </UserControl.Resources>
     <Grid>
         <Border>
@@ -26,7 +26,7 @@
                             <Setter Property="BorderBrush" Value="White"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsValidMove}" Value="True">
-                            <Setter Property="BorderBrush" Value="Yellow"/>
+                            <Setter Property="Background" Value="#108C10"/>
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="#70FF70"/>

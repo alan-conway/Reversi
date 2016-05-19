@@ -1,5 +1,10 @@
-﻿namespace Reversi.Engine.Interfaces
+﻿using Reversi.Engine.Core;
+
+namespace Reversi.Engine.Interfaces
 {
+    /// <summary>
+    /// Represents the status of the game
+    /// </summary>
     public interface IGameContext
     {
         /// <summary>
@@ -28,6 +33,16 @@
         Square this[int location] { get; }
 
         /// <summary>
+        /// Sets the piece at the given location
+        /// </summary>
+        void SetPiece(int location, Piece piece);
+
+        /// <summary>
+        /// Sets the validity at the given location
+        /// </summary>
+        void SetValid(int location, bool validity);
+
+        /// <summary>
         /// Performs initialisation to begin a new game
         /// </summary>
         void Initialise();
@@ -46,6 +61,6 @@
         /// Creates a clone of the current game context
         /// </summary>
         /// <returns></returns>
-        GameContext Clone();
+        IGameContext Clone();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Reversi.Engine.Interfaces
+﻿using Reversi.Engine.Core;
+
+namespace Reversi.Engine.Interfaces
 {
     /// <summary>
     /// Decides whether a game is still in progress, or has ended

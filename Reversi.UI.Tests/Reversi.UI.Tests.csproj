@@ -84,8 +84,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Converters\PieceToColourConverterTests.cs" />
+    <Compile Include="Converters\PieceToVisibilityConverter.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ScoreCalculatorTests.cs" />
+    <Compile Include="Services\StatusMessageFormatterTests.cs" />
     <Compile Include="ViewModel\BoardViewModelTests.cs" />
     <Compile Include="ViewModel\CellViewModelTests.cs" />
     <Compile Include="ViewModel\GameViewModelTests.cs" />

@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>C:\Users\ac\AppData\Local\Temp\vsD2F6.tmp\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>C:\Users\ac\AppData\Local\Temp\vsD2F6.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,10 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\GameContext.cs" />
+    <Compile Include="Core\GameEngine.cs" />
+    <Compile Include="Core\GameStatus.cs" />
+    <Compile Include="Core\Move.cs" />
+    <Compile Include="Core\Piece.cs" />
+    <Compile Include="Core\Randomiser.cs" />
+    <Compile Include="Core\Response.cs" />
+    <Compile Include="Core\Square.cs" />
     <Compile Include="Helpers\CaptureHelper.cs" />
-    <Compile Include="GameContext.cs" />
-    <Compile Include="GameEngine.cs" />
-    <Compile Include="GameStatus.cs" />
     <Compile Include="Helpers\GameStatusExaminer.cs" />
     <Compile Include="Interfaces\ICaptureHelper.cs" />
     <Compile Include="Interfaces\IGameContext.cs" />
@@ -55,14 +62,26 @@
     <Compile Include="Interfaces\IRandomMoveStrategy.cs" />
     <Compile Include="Interfaces\IValidMoveFinder.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />
-    <Compile Include="Move.cs" />
-    <Compile Include="Piece.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Randomiser.cs" />
-    <Compile Include="Response.cs" />
-    <Compile Include="Square.cs" />
-    <Compile Include="Strategy\RandomMoveStrategy.cs" />
+    <Compile Include="Strategy\Minimax\Heuristics\CornerHeuristic.cs" />
+    <Compile Include="Strategy\Minimax\Heuristics\IHeuristic.cs" />
+    <Compile Include="Strategy\Minimax\Heuristics\MobilityHeuristic.cs" />
+    <Compile Include="Strategy\Minimax\IMoveOrdering.cs" />
+    <Compile Include="Strategy\Minimax\IReversiTreeNode.cs" />
+    <Compile Include="Strategy\Minimax\IReversiTreeNodeBuilder.cs" />
+    <Compile Include="Strategy\Minimax\MinimaxMoveStrategy.cs" />
+    <Compile Include="Strategy\Minimax\MoveOrdering.cs" />
+    <Compile Include="Strategy\Minimax\ReversiScoreProvider.cs" />
+    <Compile Include="Strategy\Minimax\ReversiTreeNode.cs" />
+    <Compile Include="Strategy\Minimax\ReversiTreeNodeBuilder.cs" />
+    <Compile Include="Strategy\Random\RandomMoveStrategy.cs" />
     <Compile Include="Helpers\ValidMoveFinder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Game.Search\Game.Search.csproj">
+      <Project>{cb6147b0-539a-4881-ab8b-740552acb095}</Project>
+      <Name>Game.Search</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

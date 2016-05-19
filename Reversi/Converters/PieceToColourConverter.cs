@@ -1,4 +1,5 @@
 ﻿using Reversi.Engine;
+using Reversi.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

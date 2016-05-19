@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Prism.Events;
 using Reversi.Engine;
+using Reversi.Engine.Core;
 using Reversi.Events;
 using Reversi.ViewModel;
 using System;

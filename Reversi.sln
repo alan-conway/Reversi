@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi.Engine", "Reversi.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reversi.Engine.Tests", "Reversi.Engine.Tests\Reversi.Engine.Tests.csproj", "{CE28BBAA-40FE-4568-92F2-4AF3451CC119}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Search", "Game.Search\Game.Search.csproj", "{CB6147B0-539A-4881-AB8B-740552ACB095}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Search.Tests", "Game.Search.Tests\Game.Search.Tests.csproj", "{0BB1CDB9-0AA8-415B-B175-0341499D5927}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5040228C-708C-4301-BCBF-FF53DD9B9D04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,14 @@ Global
 		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE28BBAA-40FE-4568-92F2-4AF3451CC119}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB6147B0-539A-4881-AB8B-740552ACB095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB6147B0-539A-4881-AB8B-740552ACB095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB6147B0-539A-4881-AB8B-740552ACB095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB6147B0-539A-4881-AB8B-740552ACB095}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BB1CDB9-0AA8-415B-B175-0341499D5927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BB1CDB9-0AA8-415B-B175-0341499D5927}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BB1CDB9-0AA8-415B-B175-0341499D5927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BB1CDB9-0AA8-415B-B175-0341499D5927}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Core;
 
 namespace Reversi.Engine.Tests.Builders
 {

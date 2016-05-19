@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Reversi.Engine.Core;
+using System.Collections.Generic;
 
 namespace Reversi.Engine.Interfaces
 {
     public interface IMoveStrategy
     {
         /// <summary>
-        /// Choose a move to play (hopefully the best one it can, depending on the 
-        /// algorithm) 
+        /// Choose a (hopefully optimal) move to play 
         /// </summary>
-        Move ChooseMove(IGameEngine engine, IGameContext context, IValidMoveFinder validMoveFinder);
+        Move ChooseMove(IGameContext context, IGameEngine engine);
     }
 }

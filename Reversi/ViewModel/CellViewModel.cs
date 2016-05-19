@@ -1,6 +1,7 @@
 ﻿using Prism.Commands;
 using Prism.Events;
 using Reversi.Engine;
+using Reversi.Engine.Core;
 using Reversi.Events;
 using System;
 using System.Collections.Generic;
