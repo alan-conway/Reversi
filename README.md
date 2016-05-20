@@ -3,12 +3,14 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
 
-The goal of this project was to create, using TDD, a working game of Reversi. If you'd like to play the game, you can do so by fetching the latest build from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from any machine with an up-to-date .net runtime on it.
+The goal of this project was to create, using TDD, a working game of Reversi.  
+If you'd like to play the game, you can do so by fetching the latest build from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from any machine with an up-to-date .net runtime on it.
 
-There are 3 main parts to this solution at the moment:  
+There are 4 main parts to this solution at the moment:  
 1. The tests  
-2. The reversi game engine  
-3. The GUI  
+2. The overall reversi game engine  
+3. The AI in the engine  
+4. The GUI  
 
 Maybe it's unusual to list the tests first but it feels appropriate here because this project is following TDD, so a quick look there before the other components of the project...
 
@@ -94,6 +96,15 @@ Creating a new game is a simple matter. I chose to keep the state of the game bo
 Processing the opponents move requires us to examine the squares that can be reached by moving in any straight line (vertically, horizontally, diagonally) from the square played, and identifying which enemy pieces have been captured. And then capturing them.  
 Processing the opponents move results in a `Response` from the engine which contains the new state of the board, reflecting the appropriate pieces correctly captured. This happens `async`-ronously through the use of a `Task`  
 Choosing a move for the engine to make is where the fun will be, but for now it identifies all the possible valid moves and then selects one at random. This also takes place from within an `async` method.   
+
+### _The AI:_  
+`#TDD`  
+
+The AI within the engine uses a [minimax algorithm with alpha-beta pruning](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html).  
+Strictly speaking, since reversi is a zero-sum game, and since the heuristics that I'm using can be negated to give the score from the perspective of the opponent player, the algorithm being used is [Negamax](https://en.wikipedia.org/wiki/Negamax#Negamax_with_alpha_beta_pruning)  
+The idea behind minimax is to look ahead a number of moves and assess which path leads to the best outcome, and the idea behind alpha-beta pruning is to try to find an efficient way to run the minimax algorithm.  
+As part of this, I make use of heuristics to assign a score to the state of a game. I found that a reasonable heuristic was assign positive scores to capturing a corner and to better mobility, and to assign a negative score to playing next to an empty corner.  
+I have written more about the AI in my [blog post](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html) if you'd like to read more.
 
 
 ### _The GUI:_  
