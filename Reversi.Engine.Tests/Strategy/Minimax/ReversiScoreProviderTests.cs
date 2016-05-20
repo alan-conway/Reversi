@@ -4,6 +4,7 @@ using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +31,14 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             var mockStatusExaminer = new Mock<IGameStatusExaminer>();
             mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
                 .Returns(status);
+
             var cornerHeuristic = new Mock<IHeuristic>();
             var mobilityHeuristic = new Mock<IHeuristic>();
             var treeNodeBuilder = new Mock<IReversiTreeNodeBuilder>().Object;
-            var scoreProvider = new ReversiScoreProvider(mockStatusExaminer.Object,
+
+            var winLoseHeuristic = new WinLoseHeuristic(mockStatusExaminer.Object);
+
+            var scoreProvider = new ReversiScoreProvider(winLoseHeuristic,
                 cornerHeuristic.Object, mobilityHeuristic.Object);
             
             var mockContext = new Mock<IGameContext>().Object;
@@ -55,9 +60,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             int mobilityScore, bool isPlayer1, int expectedScore)
         {
             //Arrange
-            var mockStatusExaminer = new Mock<IGameStatusExaminer>();
-            mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
-                .Returns(GameStatus.InProgress);
+            var winLoseHeuristic = new Mock<IHeuristic>();
+            winLoseHeuristic.Setup(wlh => wlh.GetScore(It.IsAny<IGameContext>(), Piece.Black)).Returns(0);
 
             var cornerHeuristic = new Mock<IHeuristic>();
             cornerHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), Piece.Black)).Returns(cornerScore);
@@ -67,7 +71,7 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             mobilityHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), Piece.Black)).Returns(mobilityScore);
             mobilityHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), Piece.White)).Returns(mobilityScore * -1);
 
-            var scoreProvider = new ReversiScoreProvider(mockStatusExaminer.Object,
+            var scoreProvider = new ReversiScoreProvider(winLoseHeuristic.Object,
                 cornerHeuristic.Object, mobilityHeuristic.Object);
 
             var mockContext = new Mock<IGameContext>().Object;

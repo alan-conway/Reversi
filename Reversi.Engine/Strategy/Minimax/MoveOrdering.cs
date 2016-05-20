@@ -1,5 +1,6 @@
 ﻿using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,7 +2,7 @@
 using Game.Search.Interfaces;
 using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine.Strategy.Minimax
+namespace Reversi.Engine.Strategy.Minimax.Interfaces
 {
     /// <summary>
     /// A node in the game search tree 

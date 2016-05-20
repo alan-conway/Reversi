@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,7 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             //Assert
             Assert.Equal(0, root.Depth);
             mockChildTreeNode.VerifySet(node => node.Depth = 1, Times.Once());
+            Assert.Equal(mockChildTreeNode.Object, root.GetChildren().First());
         }
     }
 }
