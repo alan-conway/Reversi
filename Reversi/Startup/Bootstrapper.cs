@@ -18,6 +18,7 @@ using Game.Search.Minimax;
 using Reversi.Engine.Core;
 using Reversi.Services;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 
 namespace Reversi.Startup
 {
@@ -38,12 +39,12 @@ namespace Reversi.Startup
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();
             Container.RegisterType<IGameStatusExaminer, GameStatusExaminer>();
 
-            
+            Container.RegisterType<IHeuristic, WinLoseHeuristic>("WinLoseHeuristic");
             Container.RegisterType<IHeuristic, CornerHeuristic>("CornerHeuristic");
             Container.RegisterType<IHeuristic, MobilityHeuristic>("MobilityHeuristic");
             Container.RegisterType<IScoreProvider, ReversiScoreProvider>(
-                new InjectionConstructor(                    
-                    new ResolvedParameter<IGameStatusExaminer>(),
+                new InjectionConstructor(
+                    new ResolvedParameter<IHeuristic>("WinLoseHeuristic"),
                     new ResolvedParameter<IHeuristic>("CornerHeuristic"),
                     new ResolvedParameter<IHeuristic>("MobilityHeuristic")
                 ));

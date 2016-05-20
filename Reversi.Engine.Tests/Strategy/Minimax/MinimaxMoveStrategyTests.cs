@@ -5,6 +5,7 @@ using Reversi.Engine.Helpers;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using Reversi.Engine.Tests.Builders;
 using System;
 using System.Collections.Generic;
@@ -35,11 +36,11 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             _engine.CreateNewGame();
         }
 
-        private MinimaxMoveStrategy CreateStrategy(IHeuristic cornerHeuristic,
-            IHeuristic mobilityHeuristic)
+        private MinimaxMoveStrategy CreateStrategy(IHeuristic winLoseHeuristic,
+            IHeuristic cornerHeuristic, IHeuristic mobilityHeuristic)
         {
             var minimax = new MinimaxTreeEvaluator();
-            var scoreProvider = new ReversiScoreProvider(_statusExaminer,
+            var scoreProvider = new ReversiScoreProvider(winLoseHeuristic,
                 cornerHeuristic, mobilityHeuristic);
             var moveOrdering = new MoveOrdering();
             var treeNodeBuilder = new ReversiTreeNodeBuilder(_moveFinder, moveOrdering);
@@ -56,10 +57,10 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             _context.SetPiece(27, Piece.Black);
             _context.SetMovePlayed();
 
+            var winLoseHeuristic = new WinLoseHeuristic(_statusExaminer);
             var cornerHeuristic = new CornerHeuristic();
             var mobilityHeuristic = new MobilityHeuristic(_moveFinder);
-
-            var strategy = CreateStrategy(cornerHeuristic, mobilityHeuristic);
+            var strategy = CreateStrategy(winLoseHeuristic, cornerHeuristic, mobilityHeuristic);
 
             //Act
             var move = strategy.ChooseMove(_context, _engine);

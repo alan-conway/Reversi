@@ -2,6 +2,7 @@
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +16,14 @@ namespace Reversi.Engine.Strategy.Minimax
     /// </summary>
     public class ReversiScoreProvider : IScoreProvider 
     {
-        private IGameStatusExaminer _statusExaminer;
+        private IHeuristic _winLoseHeuristic;
         private IHeuristic _cornerHeuristic;
         private IHeuristic _mobilityHeuristic;
 
-        public ReversiScoreProvider(IGameStatusExaminer statusExaminer, 
+        public ReversiScoreProvider(IHeuristic winLoseHeuristic, 
             IHeuristic cornerHeuristic, IHeuristic mobilityHeuristic)
         {
-            _statusExaminer = statusExaminer;
+            _winLoseHeuristic = winLoseHeuristic;
             _cornerHeuristic = cornerHeuristic;
             _mobilityHeuristic = mobilityHeuristic;
         }
@@ -34,26 +35,13 @@ namespace Reversi.Engine.Strategy.Minimax
         /// <returns>positive score for if player is ahead, negative if behind</returns>
         public int EvaluateScore(ITreeNode node, bool isPlayer1)
         {
-            var treeNode = node as IReversiTreeNode;
+            var context = (node as IReversiTreeNode).Context;
             var relativePiece = isPlayer1 ? Piece.Black : Piece.White; // since black is player1
 
-            var status = _statusExaminer.DetermineGameStatus(treeNode.Context);
-
-            switch (status)
-            {
-                case GameStatus.BlackWins: return (isPlayer1 ? 1000 : -1000);
-                case GameStatus.WhiteWins: return (isPlayer1 ? -1000 : 1000);
-                case GameStatus.NewGame: return 0;
-                case GameStatus.Draw: return 0;
-                default: return EvaluateGameInProgress(treeNode.Context, relativePiece);
-            }
-        }
-
-        private int EvaluateGameInProgress(IGameContext context, Piece relativePiece)
-        {
+            var winLoseScore = _winLoseHeuristic.GetScore(context, relativePiece);
             var cornerScore = _cornerHeuristic.GetScore(context, relativePiece);
             var mobilityScore = _mobilityHeuristic.GetScore(context, relativePiece);
-            return cornerScore + mobilityScore;
+            return winLoseScore + cornerScore + mobilityScore;
         }
 
     }

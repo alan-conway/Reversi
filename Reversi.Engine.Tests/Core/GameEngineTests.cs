@@ -46,7 +46,7 @@ namespace Reversi.Engine.Tests.Core
         {
             //Arrange
             _engine.CreateNewGame();
-            Move move = new Move(34);
+            Move move = new Move(19);
 
             //Act
             var response = await _engine.UpdateBoardWithMoveAsync(move);
@@ -60,13 +60,13 @@ namespace Reversi.Engine.Tests.Core
         {
             //Arrange
             _engine.CreateNewGame();
-            Move move = new Move(34);
+            Move move = new Move(19);
 
             //Act
             var response = await _engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
-            Assert.Equal(Piece.Black, response.Squares[34].Piece);
+            Assert.Equal(Piece.Black, response.Squares[19].Piece);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace Reversi.Engine.Tests.Core
         {
             //Arrange
             _engine.CreateNewGame();
-            Move move = new Move(34);
+            Move move = new Move(19);
 
             //Act
             var response = await _engine.UpdateBoardWithMoveAsync(move);
@@ -125,7 +125,7 @@ namespace Reversi.Engine.Tests.Core
                 It.IsAny<IGameEngine>()))
                 .Returns(Move.PassMove);
             var engine = _builder.SetMoveStrategy(mockMoveStrategy.Object).Build();
-            Move move = new Move(34); // represents user's move
+            Move move = new Move(19); // represents user's move
             var response = await engine.UpdateBoardWithMoveAsync(move); // opponent's move
 
             //Act
@@ -149,7 +149,7 @@ namespace Reversi.Engine.Tests.Core
 
             var engine = _builder.SetStatusExaminer(mockStatusExaminer.Object).Build();
             engine.CreateNewGame();
-            Move move = new Move(34);
+            Move move = new Move(19);
 
             //Act
             var response = await engine.UpdateBoardWithMoveAsync(move);

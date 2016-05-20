@@ -1,6 +1,7 @@
 ﻿using Game.Search.Interfaces;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace Reversi.Engine.Strategy.Minimax
     /// <summary>
     /// Represents a node in the game search tree
     /// </summary>
+    /// <remarks>
+    /// Child nodes are created lazily when requested, rather than upfront
+    /// </remarks>
     public class ReversiTreeNode : ITreeNode, IReversiTreeNode
     {
         private List<IReversiTreeNode> _children;
@@ -33,6 +37,7 @@ namespace Reversi.Engine.Strategy.Minimax
 
         public IEnumerable<ITreeNode> GetChildren()
         {
+            // construct child nodes lazily when requested
             if (_children == null)
             {
                 _children = _treeNodeBuilder.CreateNextTreeNodes(Context, _engine);

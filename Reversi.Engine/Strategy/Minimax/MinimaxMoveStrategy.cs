@@ -2,6 +2,7 @@
 using Game.Search.Minimax;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,9 +46,8 @@ namespace Reversi.Engine.Strategy.Minimax
                 return Move.PassMove;
             }
 
-            int maxDepth = _maxSearchDepth;
             bool isPlayer1 = context.CurrentPiece == Piece.Black;
-            var treeNode = _treeNodeBuilder.CreateSingleTreeNode(-1, context, engine);
+            var treeNode = _treeNodeBuilder.CreateRootTreeNode(context, engine);
             var result = _minimax.EvaluateTree(treeNode, IsLeafNode, _scoreProvider, isPlayer1);
             return new Move(((IReversiTreeNode)result.TreeNode).MoveLocation);
         }

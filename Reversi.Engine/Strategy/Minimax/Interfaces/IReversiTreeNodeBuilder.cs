@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine.Strategy.Minimax
+namespace Reversi.Engine.Strategy.Minimax.Interfaces
 {
     /// <summary>
     /// Builds a node in the game search tree, or 
@@ -9,7 +9,7 @@ namespace Reversi.Engine.Strategy.Minimax
     /// </summary>
     public interface IReversiTreeNodeBuilder
     {
-        IReversiTreeNode CreateSingleTreeNode(int moveLocation, IGameContext context, IGameEngine engine);
+        IReversiTreeNode CreateRootTreeNode(IGameContext context, IGameEngine engine);
 
         List<IReversiTreeNode> CreateNextTreeNodes(IGameContext context, IGameEngine engine);
     }

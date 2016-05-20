@@ -1,5 +1,6 @@
 ﻿using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
+using Reversi.Engine.Strategy.Minimax.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,9 @@ namespace Reversi.Engine.Strategy.Minimax
         /// <summary>
         /// Creates a single node, eg for the root of the tree
         /// </summary>
-        public IReversiTreeNode CreateSingleTreeNode(int moveLocation, IGameContext context, IGameEngine engine)
+        public IReversiTreeNode CreateRootTreeNode(IGameContext context, IGameEngine engine)
         {
-            return new ReversiTreeNode(moveLocation, context, engine, this);
+            return new ReversiTreeNode(-1, context, engine, this);
         }
 
         /// <summary>
