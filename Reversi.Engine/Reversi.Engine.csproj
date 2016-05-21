@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Core\GameContext.cs" />
     <Compile Include="Core\GameEngine.cs" />
+    <Compile Include="Core\GameOptions.cs" />
     <Compile Include="Core\GameStatus.cs" />
     <Compile Include="Core\Move.cs" />
     <Compile Include="Core\Piece.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Interfaces\ICaptureHelper.cs" />
     <Compile Include="Interfaces\IGameContext.cs" />
     <Compile Include="Interfaces\IGameEngine.cs" />
+    <Compile Include="Interfaces\IGameOptions.cs" />
     <Compile Include="Interfaces\IGameStatusExaminer.cs" />
     <Compile Include="Interfaces\ILocationHelper.cs" />
     <Compile Include="Interfaces\IMoveStrategy.cs" />

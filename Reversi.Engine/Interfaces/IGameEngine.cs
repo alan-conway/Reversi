@@ -15,6 +15,11 @@ namespace Reversi.Engine.Interfaces
         IGameContext Context { get; }
 
         /// <summary>
+        /// Gets or sets game preferences 
+        /// </summary>
+        IGameOptions GameOptions { get; set; }
+
+        /// <summary>
         /// Clears the board and any internal state and creates a new game
         /// </summary>
         /// <returns>The board in new-game setup</returns>

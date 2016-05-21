@@ -21,14 +21,16 @@ namespace Reversi.Engine.Tests.Core
         {
             _builder = new GameEngineBuilder();
 
-            var context = new GameContext();
-            _engine = _builder.SetContext(context).Build();
+            _engine = _builder
+                .SetContext(new GameContext())
+                .SetOptions(new GameOptions())
+                .Build();
         }
 
         [Fact]
         public void ShouldCreateResponseWithNewBoardLayoutWhenNewGameCreated()
         {
-            //Arrange - see constructor
+            //Arrange - see contstructor
 
             //Act
             var response = _engine.CreateNewGame();
@@ -39,6 +41,41 @@ namespace Reversi.Engine.Tests.Core
             Assert.True(response.Squares.ElementAt(28).Piece == Piece.Black);
             Assert.True(response.Squares.ElementAt(35).Piece == Piece.Black);
             Assert.True(response.Squares.ElementAt(36).Piece == Piece.White);
+        }
+
+        [Theory]
+        [InlineData(true, 2, 1)]
+        [InlineData(false, 1, 0)]
+        public void ShouldExpectEngineToMakeFirstMoveWhenUserPlaysAsWhite(
+            bool userPlaysWhite, int expectedNumMoves, int expectedNumMoveChoices)
+        {
+            //Arrange
+            var options = new GameOptions() { UserPlaysAsBlack = !userPlaysWhite };
+            var mockMoveStrategy = new Mock<IMoveStrategy>();
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
+                .Returns(Move.PassMove);
+            var mockMoveFinder = new Mock<IValidMoveFinder>();
+            mockMoveFinder.Setup(mf => mf.FindAllValidMoves(It.IsAny<IGameContext>()))
+                .Returns(new[] { 0 });
+            var mockStatusExaminer = new Mock<IGameStatusExaminer>();
+            mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
+                .Returns(GameStatus.InProgress);
+            var engine = new GameEngineBuilder()
+                .SetContext(new GameContext())
+                .SetOptions(options)
+                .SetValidMoveFinder(mockMoveFinder.Object)
+                .SetMoveStrategy(mockMoveStrategy.Object)
+                .SetStatusExaminer(mockStatusExaminer.Object)
+                .Build();
+            
+            //Act
+            var response = engine.CreateNewGame();
+
+            //Assert
+            Assert.Equal(expectedNumMoves, engine.MoveNumber);
+            mockMoveStrategy.Verify(ms => ms.ChooseMove(It.IsAny<IGameContext>(), engine), 
+                Times.Exactly(expectedNumMoveChoices));
+
         }
 
         [Fact]

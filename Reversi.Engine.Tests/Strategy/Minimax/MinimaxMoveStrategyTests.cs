@@ -25,14 +25,20 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
 
         public MinimaxMoveStrategyTests()
         {
-            _context = new GameContext();
             var locationHelper = new LocationHelper();
-            var captureHelper = new CaptureHelper(locationHelper);
+            _context = new GameContext();
             _moveFinder = new ValidMoveFinder(locationHelper);
-            var mockMoveStrategy = new Mock<IMoveStrategy>().Object;
             _statusExaminer = new GameStatusExaminer(_moveFinder);
-            _engine = new GameEngine(_context, captureHelper, _moveFinder,
-                mockMoveStrategy, _statusExaminer);
+
+            var engineBuilder = new GameEngineBuilder();
+            engineBuilder.SetContext(_context);
+            engineBuilder.SetOptions(new GameOptions());
+            engineBuilder.SetCaptureHelper(new CaptureHelper(locationHelper));
+            engineBuilder.SetValidMoveFinder(_moveFinder);
+            engineBuilder.SetMoveStrategy(new Mock<IMoveStrategy>().Object);
+            engineBuilder.SetStatusExaminer(_statusExaminer);
+            _engine = engineBuilder.Build();
+
             _engine.CreateNewGame();
         }
 

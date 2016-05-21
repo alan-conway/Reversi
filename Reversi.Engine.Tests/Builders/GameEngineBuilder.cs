@@ -12,6 +12,7 @@ namespace Reversi.Engine.Tests.Builders
     public class GameEngineBuilder
     {
         private IGameContext _context;
+        private IGameOptions _options;
         private ICaptureHelper _captureHelper;
         private IValidMoveFinder _validMoveFinder;
         private IMoveStrategy _moveStrategy;
@@ -36,6 +37,9 @@ namespace Reversi.Engine.Tests.Builders
             var mockStatusExaminer = new Mock<IGameStatusExaminer>();
             _statusExaminer = mockStatusExaminer.Object;
 
+            var mockOptions = new Mock<IGameOptions>();
+            _options = mockOptions.Object;
+
             var mockContext = new Mock<IGameContext>();
             _context = mockContext.Object;
         }
@@ -43,6 +47,12 @@ namespace Reversi.Engine.Tests.Builders
         public GameEngineBuilder SetContext(IGameContext context)
         {
             _context = context;
+            return this;
+        }
+
+        public GameEngineBuilder SetOptions(IGameOptions options)
+        {
+            _options = options;
             return this;
         }
 
@@ -72,7 +82,7 @@ namespace Reversi.Engine.Tests.Builders
 
         public IGameEngine Build()
         {
-            return new GameEngine(_context, _captureHelper, 
+            return new GameEngine(_context, _options, _captureHelper, 
                 _validMoveFinder, _moveStrategy, _statusExaminer);
         }
 

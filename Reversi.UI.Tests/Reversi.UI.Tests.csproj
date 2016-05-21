@@ -92,6 +92,7 @@
     <Compile Include="ViewModel\BoardViewModelTests.cs" />
     <Compile Include="ViewModel\CellViewModelTests.cs" />
     <Compile Include="ViewModel\GameViewModelTests.cs" />
+    <Compile Include="ViewModel\OptionsViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

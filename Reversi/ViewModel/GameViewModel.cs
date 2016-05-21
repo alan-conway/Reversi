@@ -35,7 +35,9 @@ namespace Reversi.ViewModel
             NewGameCommand = new DelegateCommand(InitialiseNewGame);
             InitialiseNewGame();
         }
+
         
+
         public BoardViewModel Board { get; set; }
 
         public ICommand NewGameCommand { get; }
@@ -95,7 +97,7 @@ namespace Reversi.ViewModel
             {
                 response = await _engine.MakeReplyMoveAsync();
                 ProcessResponseFromEngine(response);
-            }            
+            }
         }
 
         /// <summary>

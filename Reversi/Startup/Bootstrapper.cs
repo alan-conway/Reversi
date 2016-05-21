@@ -30,6 +30,7 @@ namespace Reversi.Startup
 
             Container.RegisterInstance<IEventAggregator>(new EventAggregator());
             Container.RegisterInstance<IGameContext>(new GameContext());
+            Container.RegisterInstance<IGameOptions>(new GameOptions());
             Container.RegisterInstance<IRandomiser>(new Randomiser());
             Container.RegisterInstance<IMoveOrdering>(new MoveOrdering());
 
@@ -62,10 +63,13 @@ namespace Reversi.Startup
 
             Container.RegisterType<IGameEngine, GameEngine>();
             Container.RegisterType<BoardViewModel>();
-            Container.RegisterType<GameView>();
+            
             Container.RegisterType<IScoreCalculator, ScoreCalculator>();
             Container.RegisterType<IStatusMessageFormatter, StatusMessageFormatter>();
             Container.RegisterType<GameViewModel>();
+            Container.RegisterType<MainWindowViewModel>();
+            Container.RegisterType<MainWindow>();
+
         }
 
         public IUnityContainer Container { get; set; }
