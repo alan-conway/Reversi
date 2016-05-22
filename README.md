@@ -1,4 +1,4 @@
-## Creating a [Reversi game](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) game with TDD  
+## Creating a [Reversi game](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) with TDD  
 `#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async`
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
