@@ -1,16 +1,17 @@
-## Creating a [Reversi](https://github.com/alan-conway/Reversi) game with TDD  
+## Creating a [Reversi game](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) game with TDD  
 `#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async`
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
 
-The goal of this project was to create, using TDD, a working game of Reversi.  
-If you'd like to play the game, you can do so by fetching the latest build from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from any machine with an up-to-date .net runtime on it.
+The goal of this project was to create, using TDD, a working game of Reversi as a basis for learning about AI.  
+If you'd like to play the game, you can do so by fetching the zipped binaries from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from a windows machine with an up-to-date .net runtime on it.
 
-There are 4 main parts to this solution at the moment:  
-1. The tests  
-2. The overall reversi game engine  
-3. The AI in the engine  
-4. The GUI  
+There are main components in this project are:  
+
+1. [The tests](#the-tests)
+1. [The reversi game engine](#the-game-engine)
+1. [The AI](#the-ai) in the engine  
+1. [The user interface](#the-gui)
 
 Maybe it's unusual to list the tests first but it feels appropriate here because this project is following TDD, so a quick look there before the other components of the project...
 
@@ -68,7 +69,7 @@ public async void ShouldUpdateMoveNumber()
 {
 	//Arrange: Create a new game and define the location of the move
 	_engine.CreateNewGame();
-	Move move = new Move(34);
+	Move move = new Move(19);
 
 	//Act: Process move and increment the move number from 1 to 2
 	var response = await _engine.UpdateBoardAsync(move);
@@ -101,10 +102,9 @@ Choosing a move for the engine to make is where the fun will be, but for now it 
 `#TDD`  
 
 The AI within the engine uses a [minimax algorithm with alpha-beta pruning](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html).  
-Strictly speaking, since reversi is a zero-sum game, and since the heuristics that I'm using can be negated to give the score from the perspective of the opponent player, the algorithm being used is [Negamax](https://en.wikipedia.org/wiki/Negamax#Negamax_with_alpha_beta_pruning)  
-The idea behind minimax is to look ahead a number of moves and assess which path leads to the best outcome, and the idea behind alpha-beta pruning is to try to find an efficient way to run the minimax algorithm.  
-As part of this, I make use of heuristics to assign a score to the state of a game. I found that a reasonable heuristic was assign positive scores to capturing a corner and to better mobility, and to assign a negative score to playing next to an empty corner.  
-I have written more about the AI in my [blog post](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html) if you'd like to read more.
+The idea behind minimax is to look ahead a number of moves and assess which string of moves leads to the best outcome, and the idea behind alpha-beta pruning is to try to find opportunities to speed up that search.  
+As part of this process, I make use of heuristics to assign a score to the state of a game. I found that a reasonable heuristic was assign positive scores to capturing a corner and to better 'mobility', and to assign a negative scores to playing next to an empty corner.  
+I have written in more detail about the AI [in my blog post](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html) if you'd like to read more.
 
 
 ### _The GUI:_  
