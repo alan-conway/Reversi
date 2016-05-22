@@ -21,8 +21,8 @@ namespace Reversi
         {
             base.OnStartup(e);
             IUnityContainer container = new Bootstrapper().Container;
-            var mainWindow = container.Resolve<MainWindow>();
-            mainWindow.DataContext = container.Resolve<MainWindowViewModel>(); 
+            var mainWindow = container.Resolve<GameView>();
+            mainWindow.DataContext = container.Resolve<GameViewModel>(); 
             mainWindow.Show();
 
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reversi.Services.MessageDialogs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,19 +11,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Reversi.View
 {
     /// <summary>
-    /// Interaction logic for OptionsView.xaml
+    /// Interaction logic for OptionsWindow.xaml
     /// </summary>
-    public partial class OptionsView : UserControl
+    public partial class OptionsWindow : Window, IDialogWindow
     {
-        public OptionsView()
+        public OptionsWindow()
         {
             InitializeComponent();
         }
+
+
     }
 }

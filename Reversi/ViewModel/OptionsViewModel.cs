@@ -1,6 +1,7 @@
 ﻿using Prism.Commands;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
+using Reversi.Services.MessageDialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,23 @@ using System.Windows.Input;
 
 namespace Reversi.ViewModel
 {
-    public class OptionsViewModel : ViewModelBase
+    public class OptionsViewModel : ViewModelBase, IDialogViewModel
     {
-        private IGameEngine _engine;
         private bool _userPlaysAsBlack;
+        private DialogChoice _dialogChoice;
 
-        public OptionsViewModel(IGameEngine engine)
+        public OptionsViewModel(IGameOptions options)
         {
-            _engine = engine;
-            SaveOptionsCommand = new DelegateCommand(ExecuteSaveOptions, DifferencesFound);
-            UndoChangesCommand = new DelegateCommand(ExecuteUndoChanges, DifferencesFound);
+            _dialogChoice = DialogChoice.Cancel;
+
+            SaveOptionsCommand = new DelegateCommand<IDialogWindow>(ExecuteSaveOptions);
+            UndoChangesCommand = new DelegateCommand<IDialogWindow>(ExecuteUndoChanges);
 
             UserColorChoices = new[] {
                 new KeyValuePair<string, bool>("Black", true),
                 new KeyValuePair<string, bool>("White", false) };
 
-            InitialiseOptionsFromEngine();
+            FromGameOptions(options);
         }
 
         public IEnumerable<KeyValuePair<string, bool>> UserColorChoices
@@ -42,7 +44,6 @@ namespace Reversi.ViewModel
                 {
                     _userPlaysAsBlack = value;
                     Notify();
-                    NotifyButtons();
                 }
             }
         }
@@ -51,37 +52,34 @@ namespace Reversi.ViewModel
 
         public ICommand UndoChangesCommand { get; }
 
-        private void ExecuteSaveOptions()
+        public IGameOptions ToGameOptions()
         {
-            _engine.GameOptions = new GameOptions()
+            return new GameOptions()
             {
                 UserPlaysAsBlack = UserPlaysAsBlack
             };
-            InitialiseOptionsFromEngine();
         }
 
-        private void ExecuteUndoChanges()
+        private void FromGameOptions(IGameOptions options)
         {
-            InitialiseOptionsFromEngine();
-        }
-        
-        private bool DifferencesFound()
-        {
-            return _engine.GameOptions.UserPlaysAsBlack != UserPlaysAsBlack;
-        }     
-
-        private void InitialiseOptionsFromEngine()
-        {
-            UserPlaysAsBlack = _engine.GameOptions.UserPlaysAsBlack;
-            NotifyButtons();
+            UserPlaysAsBlack = options.UserPlaysAsBlack;
         }
 
-        private void NotifyButtons()
+        private void ExecuteUndoChanges(IDialogWindow window)
         {
-            (SaveOptionsCommand as DelegateCommand).RaiseCanExecuteChanged();
-            (UndoChangesCommand as DelegateCommand).RaiseCanExecuteChanged();
+            _dialogChoice = DialogChoice.Cancel;
+            window.DialogResult = false;
         }
 
+        private void ExecuteSaveOptions(IDialogWindow window)
+        {
+            _dialogChoice = DialogChoice.Ok;
+            window.DialogResult = true;
+        }
 
+        public DialogChoice GetDialogChoice()
+        {
+            return _dialogChoice;
+        }
     }
 }

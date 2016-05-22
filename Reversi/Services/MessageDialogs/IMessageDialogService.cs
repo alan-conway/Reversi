@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reversi.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,7 @@ namespace Reversi.Services.MessageDialogs
     public interface IMessageDialogService
     {
         DialogChoice ShowYesNoDialog(string title, string message);
+
+        DialogChoice ShowOptionsDialog(IDialogViewModel dialogViewModel);
     }
 }

@@ -18,7 +18,7 @@ namespace Reversi.View
     /// <summary>
     /// Interaction logic for GameView.xaml
     /// </summary>
-    public partial class GameView : UserControl
+    public partial class GameView : Window
     {
         public GameView()
         {

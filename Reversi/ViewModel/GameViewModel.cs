@@ -33,6 +33,7 @@ namespace Reversi.ViewModel
             eventAggregator.GetEvent<CellSelectedEvent>().Subscribe(OnCellSelected);
             Board = new BoardViewModel(eventAggregator);
             NewGameCommand = new DelegateCommand(InitialiseNewGame);
+            ShowOptionsCommand = new DelegateCommand(ShowOptionsWindow);
             InitialiseNewGame();
         }
 
@@ -41,6 +42,8 @@ namespace Reversi.ViewModel
         public BoardViewModel Board { get; set; }
 
         public ICommand NewGameCommand { get; }
+
+        public ICommand ShowOptionsCommand { get; }
 
         public string StatusMessage
         {
@@ -75,6 +78,15 @@ namespace Reversi.ViewModel
 
             var response = _engine.CreateNewGame();
             ProcessResponseFromEngine(response);
+        }
+
+        private void ShowOptionsWindow()
+        {
+            var optionsViewModel = new OptionsViewModel(_engine.GameOptions);
+            if (_dialogService.ShowOptionsDialog(optionsViewModel) == DialogChoice.Ok)
+            {
+                _engine.GameOptions = optionsViewModel.ToGameOptions();
+            }
         }
 
         /// <summary>

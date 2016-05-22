@@ -48,6 +48,8 @@ namespace Reversi.UI.Tests.ViewModel
             _mockDialogService = new Mock<IMessageDialogService>();
             _mockDialogService.Setup(ds => ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(DialogChoice.Yes);
+            _mockDialogService.Setup(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()))
+                .Returns(DialogChoice.Ok);
 
             var mockStatusMsgFormatter = new Mock<IStatusMessageFormatter>();
 
@@ -157,54 +159,6 @@ namespace Reversi.UI.Tests.ViewModel
             Assert.Equal(1, _gameViewModel.Board.Cells.Count(c => c.IsSelected));
         }
 
-        //[Theory]
-        //[InlineData(true, 2, 2, GameStatus.NewGame, "")]
-        //[InlineData(false, 10, 10, GameStatus.InProgress, "Black: 10  White: 10")]
-        //[InlineData(false, 15, 5, GameStatus.InProgress, "Black: 15  White: 5")]
-        //[InlineData(false, 10, 10, GameStatus.Draw, "Game is a draw  (Black: 10  White: 10)")]
-        //[InlineData(false, 15, 5, GameStatus.BlackWins, "Black wins  (Black: 59  White: 5)")]
-        //[InlineData(false, 14, 20, GameStatus.WhiteWins, "White wins  (Black: 14  White: 50)")]
-        //public void ShouldDisplayCorrectStatusMessage(bool newGame,
-        //    int numBlackCells, int numWhiteCells, 
-        //    GameStatus status, string expectedMessage)
-        //{
-        //    //Arrange
-        //    Move move = new Move(0);
-
-        //    _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.IsAny<Move>()))
-        //        .Returns(Task.FromResult(new Response(move, new Square[0])));
-
-        //    var squares = Enumerable.Range(0,64).Select(x => new Square(Piece.None, false)).ToArray();
-        //    for(int i = 0; i < numBlackCells; i++)
-        //    {
-        //        squares[i].Piece = Piece.Black;
-        //    }
-        //    for (int i = 63; i > 63-numWhiteCells; i--)
-        //    {
-        //        squares[i].Piece = Piece.White;
-        //    }
-
-        //    _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
-        //        .Returns(Task.FromResult(new Response(
-        //            new Move(63),
-        //            squares,
-        //            status)));
-
-        //    //Act
-        //    if (newGame)
-        //    {
-        //        _gameViewModel.NewGameCommand.Execute(null);
-        //    }
-        //    else
-        //    {
-        //        _cellSelectedEvent.Publish(move.LocationPlayed);
-        //    }
-
-        //    //Assert
-        //    Assert.Equal(expectedMessage, _gameViewModel.StatusMessage);
-        //}
-
-
         [Theory]
         [InlineData(false, 1)]
         [InlineData(true, 0)]
@@ -260,6 +214,65 @@ namespace Reversi.UI.Tests.ViewModel
             // Adding 1 since the first call was already made on construction
             _mockGameEngine.Verify(ge => ge.CreateNewGame(),
                 Times.Exactly(1 + numExpectedCalls));
+        }
+
+        [Fact]
+        public void ShouldDisplayOptionsDialogWhenOptionsCommandExecuted()
+        {
+            //Arrange
+            var mockGameOptions = new Mock<IGameOptions>();
+
+            _mockGameEngine.Setup(ge => ge.GameOptions)
+                .Returns(mockGameOptions.Object);
+
+            //Act
+            _gameViewModel.ShowOptionsCommand.Execute(null);
+
+            //Assert
+            _mockDialogService.Verify(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ShouldAssignGameOptionsWhenOptionsChangesAreSaved(bool userPlaysBlack)
+        {
+            //Arrange
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = userPlaysBlack
+            };
+            
+            _mockGameEngine.Setup(ge => ge.GameOptions)
+                .Returns(gameOptions);
+
+            //Act
+            _gameViewModel.ShowOptionsCommand.Execute(null);
+
+            //Assert
+            _mockGameEngine.VerifySet(ge => 
+                ge.GameOptions = It.Is<IGameOptions>(go => go.UserPlaysAsBlack == userPlaysBlack), 
+            Times.Once);
+        }
+
+        [Fact]
+        public void ShouldNotAssignGameOptionsWhenOptionsChangesAreNotSaved()
+        {
+            //Arrange
+            var mockGameOptions = new Mock<IGameOptions>();
+
+            _mockGameEngine.Setup(ge => ge.GameOptions)
+                .Returns(mockGameOptions.Object);
+
+            _mockDialogService.Setup(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()))
+                .Returns(DialogChoice.Cancel);
+
+            //Act
+            _gameViewModel.ShowOptionsCommand.Execute(null);
+
+            //Assert
+            _mockGameEngine.VerifySet(ge => ge.GameOptions = It.IsAny<IGameOptions>(),
+                Times.Never);
         }
 
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Reversi.UI.Tests.Extensions;
 using Prism.Commands;
+using Reversi.Services.MessageDialogs;
 
 namespace Reversi.UI.Tests.ViewModel
 {
@@ -18,147 +19,87 @@ namespace Reversi.UI.Tests.ViewModel
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldInitialiseOptionsCorrectlyFromEngine(bool userPlaysBlack)
+        public void ShouldInitialiseCorrectlyFromGameOptions(bool playAsBlack)
         {
             //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = userPlaysBlack };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = playAsBlack
+            };
 
             //Act
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
+            var optionsViewModel = new OptionsViewModel(gameOptions);
 
             //Assert
-            Assert.Equal(userPlaysBlack, optionsViewModel.UserPlaysAsBlack);
-        }
-
-        [Fact]
-        public void ShouldNotifyPropertyChangedWhenUpdatingPlayerColour()
-        {
-            //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            bool eventWasFired = false;
-            optionsViewModel.OnNotify(
-                nameof(OptionsViewModel.UserPlaysAsBlack), 
-                () => eventWasFired = true);
-
-            //Act
-            optionsViewModel.UserPlaysAsBlack = false; // i.e changing the value
-
-            //Assert
-            Assert.True(eventWasFired);
-        }
-
-        [Fact]
-        public void ShouldRaiseCanExecuteChangedWhenUpdatingPlayerColour()
-        {
-            //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            bool saveEventRaised = false;
-            bool undoEventRaised = false;
-
-            optionsViewModel.SaveOptionsCommand
-                .CanExecuteChanged += (e, s) => saveEventRaised = true;
-            optionsViewModel.UndoChangesCommand
-                .CanExecuteChanged += (e, s) => undoEventRaised = true;
-
-            //Act
-            optionsViewModel.UserPlaysAsBlack = false; // i.e changing the value
-
-            //Assert
-            Assert.True(saveEventRaised);
-            Assert.True(undoEventRaised);
-        }
-
-        [Fact]
-        public void ShouldNotifyPropertyChangedWhenUndoingUpdatedPlayerColour()
-        {
-            //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            optionsViewModel.UserPlaysAsBlack = false; // i.e changing the value
-
-            bool eventWasFired = false;
-            optionsViewModel.OnNotify(
-                nameof(OptionsViewModel.UserPlaysAsBlack),
-                () => eventWasFired = true);
-
-            //Act
-            optionsViewModel.UndoChangesCommand.Execute(null);
-
-            //Assert
-            Assert.True(eventWasFired);
+            Assert.Equal(playAsBlack, optionsViewModel.UserPlaysAsBlack);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldRaiseCanExecuteChangedUndoingOrSavingChanges(bool eventIsSave)
+        public void ShouldReflectChangesCorrectlyInGameOptions(bool playAsBlack)
         {
             //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            bool eventRaised = false;
-            DelegateCommand command = (DelegateCommand)(eventIsSave ?
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = !playAsBlack
+            };
+            var optionsViewModel = new OptionsViewModel(gameOptions);
+            optionsViewModel.UserPlaysAsBlack = playAsBlack; // changing the value
+
+            //Act
+            var newGameOptions = optionsViewModel.ToGameOptions();
+
+            //Assert
+            Assert.Equal(playAsBlack, newGameOptions.UserPlaysAsBlack);
+        }
+
+        [Fact]
+        public void ShouldReturnUpdatedObjectWhenChangesAreSaved()
+        {
+            //Arrange
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = true
+            };
+            var optionsViewModel = new OptionsViewModel(gameOptions);
+            optionsViewModel.UserPlaysAsBlack = false; // changing the value
+            var mockWindow = new Mock<IDialogWindow>();
+
+            var command = (DelegateCommand<IDialogWindow>)optionsViewModel.SaveOptionsCommand;
+
+            //Act
+            command.Execute(mockWindow.Object);
+
+            //Assert
+            Assert.False(optionsViewModel.ToGameOptions().UserPlaysAsBlack);
+        }
+
+        [Theory]
+        [InlineData(true, DialogChoice.Ok)]
+        [InlineData(false, DialogChoice.Cancel)]
+        public void ShouldRecordCorrecyChoiceWhenClosingWindow(
+            bool saveChanges, DialogChoice choice)
+        {
+            //Arrange
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = true
+            };
+            var optionsViewModel = new OptionsViewModel(gameOptions);
+            optionsViewModel.UserPlaysAsBlack = false; // changing the value
+            var mockWindow = new Mock<IDialogWindow>();
+
+            var command = (DelegateCommand<IDialogWindow>)(saveChanges ?
                 optionsViewModel.SaveOptionsCommand :
                 optionsViewModel.UndoChangesCommand);
 
-            command.CanExecuteChanged += (e, s) => eventRaised = true;
-
             //Act
-            command.Execute(); 
+            command.Execute(mockWindow.Object);
 
             //Assert
-            Assert.True(eventRaised);
+            Assert.Equal(choice, optionsViewModel.GetDialogChoice());
         }
-
-        [Fact]
-        public void ShouldSaveChangesWhenSaveCommandExecuted()
-        {
-            //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            optionsViewModel.UserPlaysAsBlack = false; // i.e changing the value
-
-            //Act
-            optionsViewModel.SaveOptionsCommand.Execute(null);
-
-            //Assert
-            mockEngine.VerifySet(e => 
-                e.GameOptions = It.Is<IGameOptions>(opt => opt.UserPlaysAsBlack == false));
-        }
-
-        [Fact]
-        public void ShouldResetChangesWhenUndoCommandExecuted()
-        {
-            //Arrange
-            var mockEngine = new Mock<IGameEngine>();
-            var options = new GameOptions() { UserPlaysAsBlack = true };
-            mockEngine.Setup(e => e.GameOptions).Returns(options);
-            var optionsViewModel = new OptionsViewModel(mockEngine.Object);
-            optionsViewModel.UserPlaysAsBlack = false; // i.e changing the value
-
-            //Act
-            optionsViewModel.UndoChangesCommand.Execute(null);
-
-            //Assert
-            mockEngine.VerifySet(e =>
-                e.GameOptions = It.Is<IGameOptions>(opt => opt.UserPlaysAsBlack == false),Times.Never);
-            Assert.True(optionsViewModel.UserPlaysAsBlack);
-        }
-
         
     }
 }

@@ -34,7 +34,8 @@ namespace Reversi.Startup
             Container.RegisterInstance<IRandomiser>(new Randomiser());
             Container.RegisterInstance<IMoveOrdering>(new MoveOrdering());
 
-            Container.RegisterType<IMessageDialogService, MessageDialogService>();            
+            Container.RegisterType<IDialogWindow, OptionsWindow>();
+            Container.RegisterType<IMessageDialogService, MessageDialogService>();   
             Container.RegisterType<ILocationHelper, LocationHelper>();
             Container.RegisterType<ICaptureHelper, CaptureHelper>();
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();
@@ -67,8 +68,8 @@ namespace Reversi.Startup
             Container.RegisterType<IScoreCalculator, ScoreCalculator>();
             Container.RegisterType<IStatusMessageFormatter, StatusMessageFormatter>();
             Container.RegisterType<GameViewModel>();
-            Container.RegisterType<MainWindowViewModel>();
-            Container.RegisterType<MainWindow>();
+            Container.RegisterType<OptionsViewModel>();
+            Container.RegisterType<GameView>();
 
         }
 
