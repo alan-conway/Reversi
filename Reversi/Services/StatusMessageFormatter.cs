@@ -26,8 +26,10 @@ namespace Reversi.Services
                 return string.Empty;
             }
 
-            int blackScore, whiteScore;
-            _scoreCalculator.CalculateScores(status, squares, out blackScore, out whiteScore);
+            int blackScore = _scoreCalculator.CalculateScoreForPlayer(
+                Piece.Black, status, squares);
+            int whiteScore = _scoreCalculator.CalculateScoreForPlayer(
+                Piece.White, status, squares);
 
             var score = $"Black: {blackScore}  White: {whiteScore}";
 

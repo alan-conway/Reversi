@@ -7,33 +7,32 @@ using System.Threading.Tasks;
 
 namespace Reversi.Services
 {
+    /// <summary>
+    /// Returns the score for each player
+    /// </summary>
+    /// <remarks>
+    /// At the end of the game, if there is a winner, the empty squares
+    /// are awarded, by convention, to the winner
+    /// </remarks>
+
     public class ScoreCalculator : IScoreCalculator
     {
-        /// <summary>
-        /// Displays the status (won/drawn) of the game along with the scores
-        /// </summary>
-        /// <remarks>
-        /// At the end of the game, if there is a winner, the empty squares
-        /// are awarded, by convention, to the winner
-        /// </remarks>
-        public void CalculateScores(GameStatus status, Square[] squares, out int blackScore, out int whiteScore)
+        public int CalculateScoreForPlayer(Piece player, GameStatus status, Square[] squares)
         {
-            blackScore = squares.Count(s => s.Piece == Piece.Black);
-            whiteScore = squares.Count(s => s.Piece == Piece.White);
-
-            // convention is to award the empty squares to the victor
+            int playerScore = squares.Count(s => s.Piece == player);
+            
             if (status != GameStatus.InProgress)
             {
-                int numEmptySquares = squares.Count(s => s.Piece == Piece.None);
-                if (blackScore > whiteScore)
+                // convention is to award the empty squares to the victor
+                Piece opponentPiece = player == Piece.Black ? Piece.White : Piece.Black;
+                int opponentScore = squares.Count(s => s.Piece == opponentPiece);
+                if (playerScore > opponentScore)
                 {
-                    blackScore += numEmptySquares;
-                }
-                else if (whiteScore > blackScore)
-                {
-                    whiteScore += numEmptySquares;
+                    playerScore += squares.Count(s => s.Piece == Piece.None);
                 }
             }
+
+            return playerScore;
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Reversi.Services
     /// </summary>
     public interface IScoreCalculator
     {
-        void CalculateScores(GameStatus status, Square[] squares, out int blackScore, out int whiteScore);
-    }
+        int CalculateScoreForPlayer(Piece player, GameStatus status, Square[] squares);
+    }        
 }
