@@ -36,9 +36,9 @@ namespace Reversi.UI.Tests.Services
             }
 
             //Act
-            int blackScore, whiteScore;
-            scoreCalculator.CalculateScores(status, squares, out blackScore, out whiteScore);
-
+            int blackScore = scoreCalculator.CalculateScoreForPlayer(Piece.Black, status, squares);
+            int whiteScore = scoreCalculator.CalculateScoreForPlayer(Piece.White, status, squares);
+            
             //Assert
             Assert.Equal(expectedBlackScore, blackScore);
             Assert.Equal(expectedWhiteScore, whiteScore);

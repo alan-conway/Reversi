@@ -14,30 +14,23 @@ namespace Reversi.UI.Tests.Services
     {
         [Theory]
         [InlineData(GameStatus.NewGame, 2, 2,  "")]
-        [InlineData(GameStatus.InProgress, 10, 10,  "Black: 10  White: 10")]
-        [InlineData(GameStatus.InProgress, 15, 5,  "Black: 15  White: 5")]
-        [InlineData(GameStatus.Draw, 10, 10,  "Game is a draw  (Black: 10  White: 10)")]
-        [InlineData(GameStatus.BlackWins, 15, 5,  "Black wins  (Black: 59  White: 5)")]
-        [InlineData(GameStatus.WhiteWins, 14, 20,  "White wins  (Black: 14  White: 50)")]
+        [InlineData(GameStatus.InProgress, 31, 31,  "Black: 31  White: 31")]
+        [InlineData(GameStatus.Draw, 31, 31,  "Game is a draw  (Black: 31  White: 31)")]
+        [InlineData(GameStatus.BlackWins, 59, 5,  "Black wins  (Black: 59  White: 5)")]
+        [InlineData(GameStatus.WhiteWins, 14, 50,  "White wins  (Black: 14  White: 50)")]
         public void ShouldDisplayCorrectStatusMessage(GameStatus status,
             int numBlackCells, int numWhiteCells, string expectedMessage)
         {
             //Arrange
-            var scoreCalculator = new ScoreCalculator();
-            var msgFormatter = new StatusMessageFormatter(scoreCalculator);
-
-            var squares = Enumerable.Range(0, 64).Select(x => new Square(Piece.None, false)).ToArray();
-            for (int i = 0; i < numBlackCells; i++)
-            {
-                squares[i].Piece = Piece.Black;
-            }
-            for (int i = 63; i > 63 - numWhiteCells; i--)
-            {
-                squares[i].Piece = Piece.White;
-            }
-
+            var mockScoreCalc = new Mock<IScoreCalculator>();
+            mockScoreCalc.Setup(sc => sc.CalculateScoreForPlayer(Piece.Black, status, It.IsAny<Square[]>()))
+                .Returns(numBlackCells);
+            mockScoreCalc.Setup(sc => sc.CalculateScoreForPlayer(Piece.White, status, It.IsAny<Square[]>()))
+                .Returns(numWhiteCells);
+            var msgFormatter = new StatusMessageFormatter(mockScoreCalc.Object);
+            
             //Act
-            var msg = msgFormatter.GetStatusMessage(status, squares);
+            var msg = msgFormatter.GetStatusMessage(status, null);
 
             //Assert
             Assert.Equal(expectedMessage, msg);
