@@ -39,8 +39,8 @@
     <IntermediateOutputPath>C:\Users\ac\AppData\Local\Temp\vs1FF.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq, Version=4.1.1308.2120, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.1.1308.2120\lib\net40\Moq.dll</HintPath>
+    <Reference Include="Moq, Version=4.5.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.0\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.46.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
