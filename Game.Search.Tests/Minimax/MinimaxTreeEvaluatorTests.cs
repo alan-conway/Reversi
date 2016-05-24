@@ -167,7 +167,7 @@ namespace Game.Search.Tests.Minimax
 
         private TestTreeNode BuildPredefinedTreeOfDepth4()
         {
-            http://web.cs.ucla.edu/~rosen/161/notes/alphabeta.html
+            //http://web.cs.ucla.edu/~rosen/161/notes/alphabeta.html
             TestTreeNode root = CreateTreeNode(0);
             var n1 = CreateTreeNode(1);
             var n2 = CreateTreeNode(2);

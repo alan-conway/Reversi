@@ -53,11 +53,15 @@ namespace Reversi.UI.Tests.ViewModel
 
             var mockStatusMsgFormatter = new Mock<IStatusMessageFormatter>();
 
+            var mockDelayProvider = new Mock<IDelayProvider>();
+            mockDelayProvider.Setup(dp => dp.Delay(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+
             _gameViewModel = new GameViewModel(mockEventAggregator.Object, 
                 _mockGameEngine.Object, _mockDialogService.Object,
-                mockStatusMsgFormatter.Object);
+                mockStatusMsgFormatter.Object, mockDelayProvider.Object);
 
-            _response = new Response(new Move(0), new Square[] { new Square(Piece.None, false) });
+            _response = new Response(new Move(0), new Square[] { new Square(Piece.None, true) });
             _responseGameOver = new Response(new Move(0), new Square[] { new Square(Piece.None, false) }) { Status = GameStatus.Draw };
         }
 
@@ -149,7 +153,7 @@ namespace Reversi.UI.Tests.ViewModel
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
                 .Returns(Task.FromResult(new Response(
                     new Move(0), 
-                    new Square[]{ new Square(Piece.None, false),new Square(Piece.None, false) })));
+                    new Square[]{ new Square(Piece.None, true),new Square(Piece.None, false) })));
 
             //Act
             _cellSelectedEvent.Publish(cellId);
@@ -275,6 +279,30 @@ namespace Reversi.UI.Tests.ViewModel
                 Times.Never);
         }
 
+        [Fact]
+        public void ShouldAutomaticallyPassUsersMoveIfThereAreNoValidMovesToPlay()
+        {
+            //Arrange
+            int cellId = 1;
+            Move move = new Move(cellId);
+            
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => !m.Pass)))
+                .Returns(Task.FromResult(new Response(move, new Square[0])));
+
+            _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)))
+                .Returns(Task.FromResult(_responseGameOver));
+
+            _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
+                .Returns(Task.FromResult(new Response(
+                    new Move(0),
+                    new Square[] { new Square(Piece.None, false), new Square(Piece.None, false) })));
+
+            //Act
+            _cellSelectedEvent.Publish(cellId);
+
+            //Assert
+            _mockGameEngine.Verify(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)), Times.Once);
+        }
 
     }
 }

@@ -22,13 +22,16 @@ namespace Reversi.ViewModel
         private string _statusMessage;
         private IMessageDialogService _dialogService;
         private IStatusMessageFormatter _statusMsgFormatter;
+        private IDelayProvider _delayProvider;
 
         public GameViewModel(IEventAggregator eventAggregator, IGameEngine engine, 
-            IMessageDialogService dialogService, IStatusMessageFormatter statusMsgFormatter)
+            IMessageDialogService dialogService, IStatusMessageFormatter statusMsgFormatter,
+            IDelayProvider delayProvider)
         {
             _engine = engine;
             _dialogService = dialogService;
             _statusMsgFormatter = statusMsgFormatter;
+            _delayProvider = delayProvider;
             _gameStatus = GameStatus.NewGame;
             eventAggregator.GetEvent<CellSelectedEvent>().Subscribe(OnCellSelected);
             Board = new BoardViewModel(eventAggregator);
@@ -36,8 +39,6 @@ namespace Reversi.ViewModel
             ShowOptionsCommand = new DelegateCommand(ShowOptionsWindow);
             InitialiseNewGame();
         }
-
-        
 
         public BoardViewModel Board { get; set; }
 
@@ -102,6 +103,11 @@ namespace Reversi.ViewModel
         private async void OnCellSelected(int cellId)
         {
             var move = new Move(cellId);
+            await PlayMove(move);
+        }
+
+        private async Task PlayMove(Move move)
+        {
             var response = await _engine.UpdateBoardWithMoveAsync(move);
             ProcessResponseFromEngine(response);
 
@@ -109,7 +115,19 @@ namespace Reversi.ViewModel
             {
                 response = await _engine.MakeReplyMoveAsync();
                 ProcessResponseFromEngine(response);
+
+                if (response.Status == GameStatus.InProgress &&
+                    response.Squares.All(s => !s.IsValidMove))
+                {
+                    await PassMove();
+                }
             }
+        }
+
+        private async Task PassMove()
+        {
+            await _delayProvider.Delay(250)
+                .ContinueWith(t => PlayMove(Move.PassMove));
         }
 
         /// <summary>
