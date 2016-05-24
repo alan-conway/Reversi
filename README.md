@@ -1,5 +1,5 @@
 ## Creating a [Reversi game](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) with TDD  
-`#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async`
+`#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async #AutoFixture`
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
 
@@ -16,52 +16,14 @@ There are main components in this project are:
 Maybe it's unusual to list the tests first but it feels appropriate here because this project is following TDD, so a quick look there before the other components of the project...
 
 ### _The Tests:_  
-`#TDD #xUnit #Moq #TPL #async #ExtensionMethods`  
+`#TDD #xUnit #Moq #TPL #async #ExtensionMethods #AutoFixture`  
 
-The tests in this project are written using xUnit and Moq, both of which I recommend.  
-I've made frequent use of xUnit's support of _parameterised_ tests through its `[Theory] [InlineData(..)]` attributes.  
-For the `GameEngine`, there were times when I wanted to pass various different types of mocked objects into its constructor, and to avoid repeating myself too much throughout the tests, I opted to use a _fluent builder_.  
-By 'builder', I am referring to the classical [Builder](https://en.wikipedia.org/wiki/Builder_pattern) design pattern from [GoF](https://www.amazon.co.uk/dp/0201633612). And by 'fluent', I am referring to a [fluent syntax](https://en.wikipedia.org/wiki/Fluent_interface).  
-An example of the builder and the syntax are as follows:  
+I started out writing the tests in this project using only xUnit and Moq, both of which I highly recommend.  I've now also started to make use of AutoFixture, which is also excellent  
+I've made frequent use of xUnit's support of _parameterised_ tests through its `[Theory] [InlineData(..)]` attributes - this is an easy way to reuse tests to check multiple scenarios without having to repeat any code.  
 
-~~~ C#
-private IFoo _foo;
-private IBar _bar;
+AutoFixture helps to simplify constructing objects to test through its auto mocking container feature. Previously I was using my own builder pattern to handle creating differently constructed instances of my GameEngine class, but now I'm able to define what I need and let AutoFixture worry about mocking everything else and creating the objects.  
 
-public MyObjBuilder()
-{
-	_foo = new Mock<IFoo>().Object;
-	_bar = new Mock<IBar>().Object;
-}
-
-public MyObjBuilder SetFoo(IFoo foo)
-{
-	_foo = foo;
-	return this;
-}
-
-public MyObjBuilder SetBar(IBar bar)
-{
-	_bar = bar;
-	return this;
-}
-
-public Obj Build()
-{
-	return new Obj(_foo, _bar);
-}
-~~~
-
-The _fluency_ comes from the fact that the SetFoo and SetBar methods return `this` which allows for the following (fluent-style) syntax when they are being called:
-
-~~~ C#
-Obj obj = myObjBuilder
-		.SetFoo(customFoo)
-		.SetBar(customBar)
-		.Build();
-~~~
-
-xUnit also allows us to use the `async` keyword in test method signatures, which is great when we need to `await` the result of a `Task`. Here is an example of such a test to demonstrate:
+xUnit allows me to use the `async` keyword in test method signatures, which is great when I need to `await` the result of a `Task`. Here is an example of such a test to demonstrate:
 
 ~~~ C#
 [Fact]
@@ -79,7 +41,7 @@ public async void ShouldUpdateMoveNumber()
 }
 ~~~
 
-I also wrote an extension method for implementors of INotifyPropertyChanged
+I also wrote an extension method for implementors of INotifyPropertyChanged which lets me conveniently perform a custom Action when the a particular property is changed - this allows me to confirm whether or not changes in property values fire the event as expected.
 
 
 ### _The Game Engine:_  
