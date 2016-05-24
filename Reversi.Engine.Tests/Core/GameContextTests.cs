@@ -18,7 +18,7 @@ namespace Reversi.Engine.Tests.Core
             var context = new GameContext();
 
             //Act
-
+            
             //Assert
             Assert.True(context.Squares.All(s => s.Piece == Piece.None));
             Assert.Equal(1, context.MoveNumber);

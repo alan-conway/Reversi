@@ -44,8 +44,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             //Assert            
             foreach (var mockHeuristic in mockHeuristics)
             {
-                mockHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once);
-                mockHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never);
+                mockHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once());
+                mockHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never());
             }
         }
         

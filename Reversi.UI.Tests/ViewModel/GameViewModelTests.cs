@@ -116,7 +116,7 @@ namespace Reversi.UI.Tests.ViewModel
             _mockGameEngine.Verify(ge =>
                 ge.UpdateBoardWithMoveAsync(
                     It.Is<Move>(m => m.LocationPlayed == move.LocationPlayed)),
-                    Times.Once);
+                    Times.Once());
         }
 
         [Theory]
@@ -234,7 +234,7 @@ namespace Reversi.UI.Tests.ViewModel
             _gameViewModel.ShowOptionsCommand.Execute(null);
 
             //Assert
-            _mockDialogService.Verify(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()), Times.Once);
+            _mockDialogService.Verify(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()), Times.Once());
         }
 
         [Theory]
@@ -257,7 +257,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Assert
             _mockGameEngine.VerifySet(ge =>
                 ge.GameOptions = It.Is<IGameOptions>(go => go.UserPlaysAsBlack == userPlaysBlack),
-            Times.Once);
+            Times.Once());
         }
 
         [Fact]
@@ -277,7 +277,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             //Assert
             _mockGameEngine.VerifySet(ge => ge.GameOptions = It.IsAny<IGameOptions>(),
-                Times.Never);
+                Times.Never());
         }
 
         [Fact]
@@ -302,7 +302,7 @@ namespace Reversi.UI.Tests.ViewModel
             await _gameViewModel.PlayMove(move); // invoking internal method
 
             //Assert
-            _mockGameEngine.Verify(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)), Times.Once);
+            _mockGameEngine.Verify(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)), Times.Once());
         }
 
     }

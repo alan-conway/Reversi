@@ -62,7 +62,7 @@ namespace Reversi.Engine.Tests.Strategy.Random
 
             //Assert - check that we fetch a random number
             _mockRandom.Verify(r => r.Next(It.IsAny<int>(), It.IsAny<int>()),
-                Times.Once);
+                Times.Once());
         }
     }
 }
