@@ -11,3 +11,5 @@ after_build:
 artifacts:
 - path: Reversi.zip
   name: Reversi.zip
+test:
+  assemblies: '**\*.Tests.dll'
