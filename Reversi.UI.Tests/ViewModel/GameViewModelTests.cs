@@ -38,7 +38,7 @@ namespace Reversi.UI.Tests.ViewModel
             _mockGameEngine.Setup(ge => ge.CreateNewGame())
                 .Returns(new Response(
                     Move.PassMove,
-                    new Square[] 
+                    new Square[]
                     {
                         new Square(Piece.Black, false),
                         new Square(Piece.None, true)
@@ -57,7 +57,7 @@ namespace Reversi.UI.Tests.ViewModel
             mockDelayProvider.Setup(dp => dp.Delay(It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
 
-            _gameViewModel = new GameViewModel(mockEventAggregator.Object, 
+            _gameViewModel = new GameViewModel(mockEventAggregator.Object,
                 _mockGameEngine.Object, _mockDialogService.Object,
                 mockStatusMsgFormatter.Object, mockDelayProvider.Object);
 
@@ -71,7 +71,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Arrange
             _gameViewModel.Board.Cells[0].Piece = Piece.White;
             _gameViewModel.Board.Cells[1].Piece = Piece.White;
-            
+
             //Act
             _gameViewModel.NewGameCommand.Execute(null);
 
@@ -94,7 +94,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Assert
             Assert.False(_gameViewModel.Board.Cells.Any(c => c.IsSelected));
         }
-        
+
         [Fact]
         public void ShouldSubmitMoveToEngineWhenCellSelectedEventIsPublished()
         {
@@ -112,7 +112,7 @@ namespace Reversi.UI.Tests.ViewModel
             _cellSelectedEvent.Publish(cellId);
 
             //Assert
-            _mockGameEngine.Verify(ge => 
+            _mockGameEngine.Verify(ge =>
                 ge.UpdateBoardWithMoveAsync(
                     It.Is<Move>(m => m.LocationPlayed == move.LocationPlayed)),
                     Times.Once);
@@ -152,7 +152,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             _mockGameEngine.Setup(ge => ge.MakeReplyMoveAsync())
                 .Returns(Task.FromResult(new Response(
-                    new Move(0), 
+                    new Move(0),
                     new Square[]{ new Square(Piece.None, true),new Square(Piece.None, false) })));
 
             //Act
@@ -185,8 +185,8 @@ namespace Reversi.UI.Tests.ViewModel
             _gameViewModel.NewGameCommand.Execute(null);
 
             //Assert
-            _mockDialogService.Verify(ds => 
-                ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()), 
+            _mockDialogService.Verify(ds =>
+                ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Exactly(numExpectedCalls));
         }
 
@@ -246,7 +246,7 @@ namespace Reversi.UI.Tests.ViewModel
             {
                 UserPlaysAsBlack = userPlaysBlack
             };
-            
+
             _mockGameEngine.Setup(ge => ge.GameOptions)
                 .Returns(gameOptions);
 
@@ -254,8 +254,8 @@ namespace Reversi.UI.Tests.ViewModel
             _gameViewModel.ShowOptionsCommand.Execute(null);
 
             //Assert
-            _mockGameEngine.VerifySet(ge => 
-                ge.GameOptions = It.Is<IGameOptions>(go => go.UserPlaysAsBlack == userPlaysBlack), 
+            _mockGameEngine.VerifySet(ge =>
+                ge.GameOptions = It.Is<IGameOptions>(go => go.UserPlaysAsBlack == userPlaysBlack),
             Times.Once);
         }
 
@@ -285,7 +285,7 @@ namespace Reversi.UI.Tests.ViewModel
             //Arrange
             int cellId = 1;
             Move move = new Move(cellId);
-            
+
             _mockGameEngine.Setup(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => !m.Pass)))
                 .Returns(Task.FromResult(new Response(move, new Square[0])));
 
