@@ -123,21 +123,21 @@ namespace Reversi.Engine.Core
 
             moveContext.SetMovePlayed();
 
-            var validSubsequentMoves = _validMoveFinder.FindAllValidMoves(moveContext);
             MarkAnyValidMoves();
 
             var status = _statusExaminer.DetermineGameStatus(moveContext);
 
-            if (!validSubsequentMoves.Any() && status == GameStatus.InProgress)
-            {
-                // opponent has no valid moves but game is not over:
-                moveContext.SetMovePlayed(); // auto-skip opponents move
-                return MakeReplyMove(moveContext); // play another move (recursively)                
-            }
-            else
-            {
+            //var validSubsequentMoves = _validMoveFinder.FindAllValidMoves(moveContext);
+            //if (!validSubsequentMoves.Any() && status == GameStatus.InProgress)
+            //{
+            //    // opponent has no valid moves but game is not over:
+            //    moveContext.SetMovePlayed(); // auto-skip opponents move
+            //    return MakeReplyMove(moveContext); // play another move (recursively)                
+            //}
+            //else
+            //{
                 return new Response(move, moveContext.Squares, status);
-            }
+            //}
         }
         
         private static Piece GetEnemyPiece(Piece piece)

@@ -87,6 +87,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\PieceToVisibilityConverter.cs" />
+    <Compile Include="Services\DelayProvider.cs" />
+    <Compile Include="Services\IDelayProvider.cs" />
     <Compile Include="Services\IScoreCalculator.cs" />
     <Compile Include="Services\IStatusMessageFormatter.cs" />
     <Compile Include="Services\MessageDialogs\DialogChoice.cs" />
