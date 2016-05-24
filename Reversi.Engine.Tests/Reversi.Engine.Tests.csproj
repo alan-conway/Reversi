@@ -41,6 +41,18 @@
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.46.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.3.46.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ploeh.AutoFixture.AutoMoq, Version=3.46.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.AutoMoq.3.46.0\lib\net40\Ploeh.AutoFixture.AutoMoq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ploeh.AutoFixture.Xunit2, Version=3.46.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.Xunit2.3.46.0\lib\net45\Ploeh.AutoFixture.Xunit2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
@@ -72,10 +84,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Builders\GameEngineBuilder.cs" />
     <Compile Include="Core\GameContextTests.cs" />
     <Compile Include="Core\GameEngineTests.cs" />
-    <Compile Include="Factories\GameContextFactory.cs" />
+    <Compile Include="Extensions\GameContextExtension.cs" />
     <Compile Include="Helpers\CaptureHelperTests.cs" />
     <Compile Include="Helpers\GameStatusExaminerTests.cs" />
     <Compile Include="Helpers\LocationHelperTests.cs" />
@@ -92,6 +103,7 @@
     <Compile Include="Strategy\Random\RandomMoveStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

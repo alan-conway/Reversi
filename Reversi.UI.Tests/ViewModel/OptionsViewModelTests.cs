@@ -11,6 +11,8 @@ using Xunit;
 using Reversi.UI.Tests.Extensions;
 using Prism.Commands;
 using Reversi.Services.MessageDialogs;
+using Ploeh.AutoFixture.AutoMoq;
+using Ploeh.AutoFixture;
 
 namespace Reversi.UI.Tests.ViewModel
 {
@@ -22,10 +24,7 @@ namespace Reversi.UI.Tests.ViewModel
         public void ShouldInitialiseCorrectlyFromGameOptions(bool playAsBlack)
         {
             //Arrange
-            var gameOptions = new GameOptions()
-            {
-                UserPlaysAsBlack = playAsBlack
-            };
+            var gameOptions = new GameOptions() { UserPlaysAsBlack = playAsBlack };
 
             //Act
             var optionsViewModel = new OptionsViewModel(gameOptions);
@@ -40,11 +39,10 @@ namespace Reversi.UI.Tests.ViewModel
         public void ShouldReflectChangesCorrectlyInGameOptions(bool playAsBlack)
         {
             //Arrange
-            var gameOptions = new GameOptions()
-            {
-                UserPlaysAsBlack = !playAsBlack
-            };
-            var optionsViewModel = new OptionsViewModel(gameOptions);
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            fixture.Inject<IGameOptions>(new GameOptions() { UserPlaysAsBlack = !playAsBlack });
+
+            var optionsViewModel = fixture.Create<OptionsViewModel>();
             optionsViewModel.UserPlaysAsBlack = playAsBlack; // changing the value
 
             //Act
@@ -58,14 +56,13 @@ namespace Reversi.UI.Tests.ViewModel
         public void ShouldReturnUpdatedObjectWhenChangesAreSaved()
         {
             //Arrange
-            var gameOptions = new GameOptions()
-            {
-                UserPlaysAsBlack = true
-            };
-            var optionsViewModel = new OptionsViewModel(gameOptions);
-            optionsViewModel.UserPlaysAsBlack = false; // changing the value
-            var mockWindow = new Mock<IDialogWindow>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            fixture.Inject<IGameOptions>(new GameOptions() { UserPlaysAsBlack = true });
 
+            var optionsViewModel = fixture.Create<OptionsViewModel>();
+            optionsViewModel.UserPlaysAsBlack = false; // changing the value
+
+            var mockWindow = fixture.Freeze<Mock<IDialogWindow>>();
             var command = (DelegateCommand<IDialogWindow>)optionsViewModel.SaveOptionsCommand;
 
             //Act
@@ -82,14 +79,13 @@ namespace Reversi.UI.Tests.ViewModel
             bool saveChanges, DialogChoice choice)
         {
             //Arrange
-            var gameOptions = new GameOptions()
-            {
-                UserPlaysAsBlack = true
-            };
-            var optionsViewModel = new OptionsViewModel(gameOptions);
-            optionsViewModel.UserPlaysAsBlack = false; // changing the value
-            var mockWindow = new Mock<IDialogWindow>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            fixture.Inject<IGameOptions>(new GameOptions() { UserPlaysAsBlack = true });
 
+            var optionsViewModel = fixture.Create<OptionsViewModel>();
+            optionsViewModel.UserPlaysAsBlack = false; // changing the value
+
+            var mockWindow = fixture.Freeze<Mock<IDialogWindow>>();
             var command = (DelegateCommand<IDialogWindow>)(saveChanges ?
                 optionsViewModel.SaveOptionsCommand :
                 optionsViewModel.UndoChangesCommand);

@@ -1,4 +1,6 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Prism.Events;
 using Reversi.Engine;
 using Reversi.Engine.Core;
@@ -19,13 +21,15 @@ namespace Reversi.UI.Tests.ViewModel
         public void ShouldInitialiseWithBlankCells()
         {
             //Arrange 
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+
             var cellSelectedEvent = new CellSelectedEvent();
-            var mockEventAggregator = new Mock<IEventAggregator>();
+            var mockEventAggregator = fixture.Freeze<Mock<IEventAggregator>>();
             mockEventAggregator.Setup(ea => ea.GetEvent<CellSelectedEvent>())
                 .Returns(cellSelectedEvent);
 
             //Act
-            var viewModel = new BoardViewModel(mockEventAggregator.Object);
+            var viewModel = fixture.Create<BoardViewModel>();
 
             //Assert
             Assert.Equal(64, viewModel.Cells.Count);

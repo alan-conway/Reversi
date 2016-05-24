@@ -1,4 +1,6 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
@@ -18,20 +20,19 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
         public void ShouldBuildTreeNodesWithExpectedMovesInContext()
         {
             //Arrange
-            var context = new GameContext();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            var mockMoveFinder = new Mock<IValidMoveFinder>();
+            var context = fixture.Freeze<GameContext>();
+
+            var mockMoveFinder = fixture.Freeze<Mock<IValidMoveFinder>>();
             mockMoveFinder.Setup(mf => mf.FindAllValidMoves(context))
                 .Returns(new[] { 1, 2, 3});
 
-            var mockMoveOrdering = new Mock<IMoveOrdering>();
+            var mockMoveOrdering = fixture.Freeze<Mock<IMoveOrdering>>();
             mockMoveOrdering.Setup(mo => mo.OrderMoves(context, It.IsAny<IEnumerable<int>>()))
                 .Returns(new[] { 1, 2, 3 });
 
-            var treeNodeBuilder = new ReversiTreeNodeBuilder(mockMoveFinder.Object,
-                mockMoveOrdering.Object);
-
-            var mockEngine = new Mock<IGameEngine>();            
+            var mockEngine = fixture.Freeze<Mock<IGameEngine>>();            
             mockEngine.Setup(e => e.UpdateBoardWithMove(
                 It.Is<Move>(m => m.LocationPlayed == 1), It.IsAny<IGameContext>()))
                 .Returns(new Response(new Move(1), GetSquares(1)));
@@ -43,6 +44,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             mockEngine.Setup(e => e.UpdateBoardWithMove(
                 It.Is<Move>(m => m.LocationPlayed == 3), It.IsAny<IGameContext>()))
                 .Returns(new Response(new Move(3), GetSquares(3)));
+
+            var treeNodeBuilder = fixture.Create<ReversiTreeNodeBuilder>();
 
             //Act
             var treeNodes = treeNodeBuilder.CreateNextTreeNodes(context, mockEngine.Object);

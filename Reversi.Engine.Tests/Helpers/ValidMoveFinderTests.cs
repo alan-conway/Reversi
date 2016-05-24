@@ -7,32 +7,25 @@ using Reversi.Engine.Interfaces;
 using Xunit;
 using Reversi.Engine.Helpers;
 using Reversi.Engine.Core;
+using Ploeh.AutoFixture.AutoMoq;
+using Ploeh.AutoFixture;
+using Reversi.Engine.Tests.Extensions;
 
 namespace Reversi.Engine.Tests.Helpers
 {
     public class ValidMoveFinderTests
     {
         private IGameContext _context;
+        private ValidMoveFinder _validMoveFinder;
 
         public ValidMoveFinderTests()
         {
-            _context = new GameContext();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            fixture.Inject<ILocationHelper>(new LocationHelper());
+            _validMoveFinder = fixture.Create<ValidMoveFinder>();
+            _context = fixture.Create<GameContext>();
         }
 
-        private IValidMoveFinder Setup(int[] blackSquares, int[] whiteSquares)
-        {
-            var locationHelper = new LocationHelper();
-            var validMoveFinder = new ValidMoveFinder(locationHelper);
-            foreach (var index in blackSquares)
-            {
-                _context.SetPiece(index, Piece.Black);
-            }
-            foreach (var index in whiteSquares)
-            {
-                _context.SetPiece(index, Piece.White);
-            }
-            return validMoveFinder;
-        }
 
         [Theory]
         [InlineData(0, true, new[] { 2 }, new[] { 1 })] // captures a piece
@@ -44,16 +37,15 @@ namespace Reversi.Engine.Tests.Helpers
             int[] blackSquares, int[] whiteSquares)
         {
             //Arrange
-            IValidMoveFinder identifier = Setup(blackSquares, whiteSquares);
+            _context.SetPiece(Piece.Black, blackSquares)
+                    .SetPiece(Piece.White, whiteSquares);
 
             //Act
-            bool result = identifier.IsValidMove(_context, locationPlayed);
+            bool result = _validMoveFinder.IsValidMove(_context, locationPlayed);
 
             //Assert
             Assert.Equal(isExpectedValid, result);
-        }
-
-        
+        }        
 
         [Theory]
         [InlineData(new[] { 20, 29, 34, 43 }, new[] { 27, 36 }, new[] { 28, 35})] 
@@ -61,14 +53,17 @@ namespace Reversi.Engine.Tests.Helpers
             int[] blackSquares, int[] whiteSquares)
         {
             //Arrange
-            IValidMoveFinder identifier = Setup(blackSquares, whiteSquares);
+            _context.SetPiece(Piece.Black, blackSquares)
+                    .SetPiece(Piece.White, whiteSquares);
 
             //Act
-            var result = identifier.FindAllValidMoves(_context);
+            var result = _validMoveFinder.FindAllValidMoves(_context);
 
             //Assert
             Assert.Equal(expected.Length, result.Count());
             Assert.False(expected.Except(result).Any());
         }
+
+        
     }
 }

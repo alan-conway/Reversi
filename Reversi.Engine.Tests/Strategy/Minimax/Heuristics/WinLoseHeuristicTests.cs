@@ -1,4 +1,6 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
@@ -24,18 +26,17 @@ namespace Reversi.Engine.Tests.Strategy.Minimax.Heuristics
             GameStatus status, bool isPlayer1, int expectedScore)
         {
             //Arrange
-            var mockStatusExaminer = new Mock<IGameStatusExaminer>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var mockStatusExaminer = fixture.Freeze<Mock<IGameStatusExaminer>>();
+            var mockContext = fixture.Freeze<Mock<IGameContext>>();
+
             mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
                 .Returns(status);
-
-            var winLoseHeuristic = new WinLoseHeuristic(mockStatusExaminer.Object);
-
-            var mockContext = new Mock<IGameContext>().Object;
-
             var relativePiece = isPlayer1 ? Piece.Black : Piece.White;
+            var winLoseHeuristic = fixture.Create<WinLoseHeuristic>();
 
             //Act
-            int score = winLoseHeuristic.GetScore(mockContext, relativePiece);
+            int score = winLoseHeuristic.GetScore(mockContext.Object, relativePiece);
 
             //Assert
             Assert.Equal(expectedScore, score);

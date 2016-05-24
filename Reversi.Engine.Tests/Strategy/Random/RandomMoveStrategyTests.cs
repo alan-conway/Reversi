@@ -1,4 +1,7 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Ploeh.AutoFixture.Xunit2;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy;
 using Reversi.Engine.Strategy.Random;
@@ -13,49 +16,49 @@ namespace Reversi.Engine.Tests.Strategy.Random
 {
     public class RandomMoveStrategyTests
     {
-        private IGameContext _context;
-        private IGameEngine _engine;
         private Mock<IRandomiser> _mockRandom;
         private Mock<IValidMoveFinder> _mockValidMoveFinder;
         private RandomMoveStrategy _strategy;
 
         public RandomMoveStrategyTests()
         {
-            _mockRandom = new Mock<IRandomiser>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _mockRandom = fixture.Freeze<Mock<IRandomiser>>();
             _mockRandom.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(0);
-            _engine = new Mock<IGameEngine>().Object;
-            _context = new Mock<IGameContext>().Object;
-            _mockValidMoveFinder = new Mock<IValidMoveFinder>();
-            _strategy = new RandomMoveStrategy(_mockRandom.Object, _mockValidMoveFinder.Object);
+
+            _mockValidMoveFinder = fixture.Freeze<Mock<IValidMoveFinder>>();
+            _strategy = fixture.Create<RandomMoveStrategy>();
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ShouldReturnPassOnlyIfNoValidMovesAreAvailable(bool areMovesAvailable)
+        [InlineAutoData(true)]
+        [InlineAutoData(false)]
+        public void ShouldReturnPassOnlyIfNoValidMovesAreAvailable(bool areMovesAvailable,
+            Mock<IGameEngine> engine)
         {
             //Arrange            
-            _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(_context))
+            _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(It.IsAny<IGameContext>()))
                 .Returns(areMovesAvailable ? new[] { 0, 1, 2 } : new int[0]);
             bool expectMoveToBePass = !areMovesAvailable;
 
             //Act
-            var move = _strategy.ChooseMove(_context, _engine);
+            var move = _strategy.ChooseMove(engine.Object.Context, engine.Object);
 
             //Assert
             Assert.Equal(expectMoveToBePass, move.Pass);
         }
 
-        [Fact]
-        public void ShouldReturnReturnMovesRandomly()
+        [Theory]
+        [InlineAutoData()]
+        public void ShouldReturnReturnMovesRandomly(Mock<IGameEngine> engine)
         {
             //Arrange
-            _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(_context))
+            _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(It.IsAny<IGameContext>()))
                 .Returns(new[] { 0, 1, 2 });
 
             //Act
-            _strategy.ChooseMove(_context, _engine);
+            _strategy.ChooseMove(engine.Object.Context, engine.Object);
 
             //Assert - check that we fetch a random number
             _mockRandom.Verify(r => r.Next(It.IsAny<int>(), It.IsAny<int>()),

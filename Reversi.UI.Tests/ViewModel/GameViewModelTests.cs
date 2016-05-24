@@ -14,6 +14,8 @@ using Xunit;
 using Reversi.Services.MessageDialogs;
 using Reversi.Engine.Core;
 using Reversi.Services;
+using Ploeh.AutoFixture.AutoMoq;
+using Ploeh.AutoFixture;
 
 namespace Reversi.UI.Tests.ViewModel
 {
@@ -29,11 +31,14 @@ namespace Reversi.UI.Tests.ViewModel
         public GameViewModelTests()
         {
             _cellSelectedEvent = new CellSelectedEvent();
-            var mockEventAggregator = new Mock<IEventAggregator>();
+
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            var mockEventAggregator = fixture.Freeze<Mock<IEventAggregator>>();
             mockEventAggregator.Setup(ea => ea.GetEvent<CellSelectedEvent>())
                 .Returns(_cellSelectedEvent);
 
-            _mockGameEngine = new Mock<IGameEngine>();
+            _mockGameEngine = fixture.Freeze<Mock<IGameEngine>>();
 
             _mockGameEngine.Setup(ge => ge.CreateNewGame())
                 .Returns(new Response(
@@ -45,21 +50,17 @@ namespace Reversi.UI.Tests.ViewModel
                     },
                     GameStatus.NewGame));
 
-            _mockDialogService = new Mock<IMessageDialogService>();
+            _mockDialogService = fixture.Freeze<Mock<IMessageDialogService>>();
             _mockDialogService.Setup(ds => ds.ShowYesNoDialog(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(DialogChoice.Yes);
             _mockDialogService.Setup(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()))
                 .Returns(DialogChoice.Ok);
 
-            var mockStatusMsgFormatter = new Mock<IStatusMessageFormatter>();
-
-            var mockDelayProvider = new Mock<IDelayProvider>();
+            var mockDelayProvider = fixture.Freeze<Mock<IDelayProvider>>();
             mockDelayProvider.Setup(dp => dp.Delay(It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
 
-            _gameViewModel = new GameViewModel(mockEventAggregator.Object,
-                _mockGameEngine.Object, _mockDialogService.Object,
-                mockStatusMsgFormatter.Object, mockDelayProvider.Object);
+            _gameViewModel = fixture.Create<GameViewModel>();
 
             _response = new Response(new Move(0), new Square[] { new Square(Piece.None, true) });
             _responseGameOver = new Response(new Move(0), new Square[] { new Square(Piece.None, false) }) { Status = GameStatus.Draw };

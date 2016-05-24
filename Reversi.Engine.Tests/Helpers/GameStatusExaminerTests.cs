@@ -1,14 +1,16 @@
-﻿using Moq;
-using Reversi.Engine.Tests.Factories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Reversi.Engine.Interfaces;
+using Moq;
 using Xunit;
+using Reversi.Engine.Interfaces;
 using Reversi.Engine.Helpers;
 using Reversi.Engine.Core;
+using Reversi.Engine.Tests.Extensions;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 
 namespace Reversi.Engine.Tests.Helpers
 {
@@ -22,10 +24,15 @@ namespace Reversi.Engine.Tests.Helpers
             GameStatus expectedStatus)
         {
             //Arrange
+            var fixture = new Fixture();
             int[] blackSquares = Enumerable.Range(0, numBlackPieces-1).ToArray();
             int[] whiteSquares = Enumerable.Range(numBlackPieces, 63-numBlackPieces).ToArray();
-            var context = GameContextFactory.CreateGameContext(blackSquares, whiteSquares);
-            var mockValidMoveFinder = new Mock<IValidMoveFinder>();
+            var context = new GameContext()
+                .SetPiece(Piece.Black, blackSquares)
+                .SetPiece(Piece.White, whiteSquares);
+            fixture.Inject<IGameContext>(context);
+
+            var mockValidMoveFinder = fixture.Freeze<Mock<IValidMoveFinder>>();
             mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(context))
                 .Returns(new int[0]);
             var statusExaminer = new GameStatusExaminer(mockValidMoveFinder.Object);
@@ -43,20 +50,22 @@ namespace Reversi.Engine.Tests.Helpers
         public void ShouldSetCorrectStatusWhenMovesRemainForWhiteButNotBlack(bool isBlackToPlay)
         {
             //Arrange
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
             var context = new GameContext();
             if (!isBlackToPlay)
             {
                 // indicate that it's white to play
                 context.SetMovePlayed(); 
             }
-            var mockValidMoveFinder = new Mock<IValidMoveFinder>();
+
+            var mockValidMoveFinder = fixture.Freeze<Mock<IValidMoveFinder>>();
             mockValidMoveFinder.Setup(vmf =>
                 vmf.IsAnyMoveValid(It.Is<IGameContext>(c => c.CurrentPiece == Piece.Black)))
                 .Returns(false); // indicate no valid moves remain if black
             mockValidMoveFinder.Setup(vmf =>
                 vmf.IsAnyMoveValid(It.Is<IGameContext>(c => c.CurrentPiece == Piece.White)))
                 .Returns(true); // indicate some valid moves remain if white
-            var statusExaminer = new GameStatusExaminer(mockValidMoveFinder.Object);
+            var statusExaminer = fixture.Create<GameStatusExaminer>();
 
             //Act
             var result = statusExaminer.DetermineGameStatus(context);

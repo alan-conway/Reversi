@@ -1,4 +1,6 @@
-﻿using Reversi.Engine.Core;
+﻿using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
 using System;
@@ -25,7 +27,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax.Heuristics
             int[] blackLocations, int[] whiteLocations, double expectedScore)
         {
             //Arrange
-            IGameContext context = new GameContext();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var context = fixture.Freeze<GameContext>();
             foreach(int loc in blackLocations)
             {
                 context.SetPiece(loc, Piece.Black);
@@ -34,7 +37,7 @@ namespace Reversi.Engine.Tests.Strategy.Minimax.Heuristics
             {
                 context.SetPiece(loc, Piece.White);
             }
-            var heuristic = new CornerHeuristic();
+            var heuristic = fixture.Create<CornerHeuristic>();
             var altPiece = relativePiece == Piece.Black ? Piece.White : Piece.Black;
 
             //Act

@@ -1,13 +1,13 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Engine.Helpers;
-using Reversi.Engine.Tests.Factories;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Reversi.Engine.Tests.Extensions;
 
 namespace Reversi.Engine.Tests.Helpers
 {
@@ -26,7 +26,10 @@ namespace Reversi.Engine.Tests.Helpers
             int[] expectCaptured, int[] expectNotCaptured)
         {
             //Arrange
-            var context = GameContextFactory.CreateGameContext(blackPieces, whitePieces);
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var context = fixture.Create<GameContext>();
+            context.SetPiece(Piece.Black, blackPieces)
+                   .SetPiece(Piece.White, whitePieces);
             var captureHelper = new CaptureHelper(new LocationHelper());
 
             //Act

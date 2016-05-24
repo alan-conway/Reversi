@@ -1,4 +1,6 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Services;
 using System;
@@ -22,12 +24,13 @@ namespace Reversi.UI.Tests.Services
             int numBlackCells, int numWhiteCells, string expectedMessage)
         {
             //Arrange
-            var mockScoreCalc = new Mock<IScoreCalculator>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var mockScoreCalc = fixture.Freeze<Mock<IScoreCalculator>>();
             mockScoreCalc.Setup(sc => sc.CalculateScoreForPlayer(Piece.Black, status, It.IsAny<Square[]>()))
                 .Returns(numBlackCells);
             mockScoreCalc.Setup(sc => sc.CalculateScoreForPlayer(Piece.White, status, It.IsAny<Square[]>()))
                 .Returns(numWhiteCells);
-            var msgFormatter = new StatusMessageFormatter(mockScoreCalc.Object);
+            var msgFormatter = fixture.Create<StatusMessageFormatter>();
             
             //Act
             var msg = msgFormatter.GetStatusMessage(status, null);

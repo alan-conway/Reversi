@@ -1,4 +1,6 @@
 ﻿using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
@@ -22,14 +24,15 @@ namespace Reversi.Engine.Tests.Strategy.Minimax.Heuristics
                    int numBlackMoves, int numWhiteMoves, double expectedScore)
         {
             //Arrange
-            IGameContext context = new GameContext();
-            var mockMoveFinder = new Mock<IValidMoveFinder>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var context = fixture.Freeze<GameContext>();
+            var mockMoveFinder = fixture.Freeze<Mock<IValidMoveFinder>>();
             mockMoveFinder.Setup(mf => mf.FindAllValidMoves(context, Piece.Black))
                 .Returns(new int[numBlackMoves]);
             mockMoveFinder.Setup(mf => mf.FindAllValidMoves(context, Piece.White))
                 .Returns(new int[numWhiteMoves]);
 
-            var heuristic = new MobilityHeuristic(mockMoveFinder.Object);
+            var heuristic = fixture.Create<MobilityHeuristic>();
             var altPiece = relativePiece == Piece.Black ? Piece.White : Piece.Black;
 
             //Act

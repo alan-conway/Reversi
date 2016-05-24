@@ -1,5 +1,7 @@
 ﻿using Game.Search.Interfaces;
 using Moq;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
@@ -22,29 +24,29 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
         public void ShouldCallHeuristicsWithCorrectPiece(bool isPlayer1, Piece expectedPiece)
         {
             //Arrange
-            var context = new Mock<IGameContext>().Object;
-            var mockTreeNode = new Mock<IReversiTreeNode>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());                        
+
+            var mockContext = fixture.Freeze<Mock<IGameContext>>();
+            var context = mockContext.Object;
+            var mockTreeNode = fixture.Freeze<Mock<IReversiTreeNode>>();
             mockTreeNode.Setup(tn => tn.Context).Returns(context);
 
             var enemyPiece = expectedPiece == Piece.Black ? Piece.White : Piece.Black;
 
-            var winLoseHeuristic = new Mock<IHeuristic>();
-            var cornerHeuristic = new Mock<IHeuristic>();
-            var mobilityHeuristic = new Mock<IHeuristic>();
-            
-            var scoreProvider = new ReversiScoreProvider(winLoseHeuristic.Object,
-                cornerHeuristic.Object, mobilityHeuristic.Object);
+            var mockHeuristics = fixture.CreateMany<Mock<IHeuristic>>(3);
+            var heuristics = mockHeuristics.Select(m => m.Object).ToArray();
+
+            var scoreProvider = new ReversiScoreProvider(heuristics[0], heuristics[1], heuristics[2]);
 
             //Act
             scoreProvider.EvaluateScore(mockTreeNode.Object, isPlayer1);
 
-            //Assert
-            winLoseHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once);
-            winLoseHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never);
-            cornerHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once);
-            cornerHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never);
-            mobilityHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once);
-            mobilityHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never);
+            //Assert            
+            foreach (var mockHeuristic in mockHeuristics)
+            {
+                mockHeuristic.Verify(h => h.GetScore(context, expectedPiece), Times.Once);
+                mockHeuristic.Verify(h => h.GetScore(context, enemyPiece), Times.Never);
+            }
         }
         
         [Theory]
@@ -59,22 +61,23 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             int cornerScore, int mobilityScore, bool isPlayer1, int expectedScore)
         {
             //Arrange
-            var context = new Mock<IGameContext>().Object;
-            var mockTreeNode = new Mock<IReversiTreeNode>();
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var context = fixture.Freeze<Mock<IGameContext>>().Object;
+            var mockTreeNode = fixture.Freeze<Mock<IReversiTreeNode>>();
             mockTreeNode.Setup(tn => tn.Context).Returns(context);
 
             Piece currentPlayer = isPlayer1 ? Piece.Black : Piece.White;
             Piece opponentPlayer = (currentPlayer == Piece.Black ? Piece.White : Piece.Black);
 
-            var winLoseHeuristic = new Mock<IHeuristic>();
+            var winLoseHeuristic = fixture.Create<Mock<IHeuristic>>();
             winLoseHeuristic.Setup(wlh => wlh.GetScore(It.IsAny<IGameContext>(), currentPlayer)).Returns(winLoseScore);
             winLoseHeuristic.Setup(wlh => wlh.GetScore(It.IsAny<IGameContext>(), opponentPlayer)).Returns(winLoseScore * -1);
 
-            var cornerHeuristic = new Mock<IHeuristic>();
+            var cornerHeuristic = fixture.Create<Mock<IHeuristic>>();
             cornerHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), currentPlayer)).Returns(cornerScore);
             cornerHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), opponentPlayer)).Returns(cornerScore * -1);
 
-            var mobilityHeuristic = new Mock<IHeuristic>();
+            var mobilityHeuristic = fixture.Create<Mock<IHeuristic>>();
             mobilityHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), currentPlayer)).Returns(mobilityScore);
             mobilityHeuristic.Setup(ch => ch.GetScore(It.IsAny<IGameContext>(), opponentPlayer)).Returns(mobilityScore * -1);
 
