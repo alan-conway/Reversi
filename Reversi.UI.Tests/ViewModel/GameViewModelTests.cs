@@ -280,7 +280,7 @@ namespace Reversi.UI.Tests.ViewModel
         }
 
         [Fact]
-        public void ShouldAutomaticallyPassUsersMoveIfThereAreNoValidMovesToPlay()
+        public async void ShouldAutomaticallyPassUsersMoveIfThereAreNoValidMovesToPlay()
         {
             //Arrange
             int cellId = 1;
@@ -298,7 +298,7 @@ namespace Reversi.UI.Tests.ViewModel
                     new Square[] { new Square(Piece.None, false), new Square(Piece.None, false) })));
 
             //Act
-            _cellSelectedEvent.Publish(cellId);
+            await _gameViewModel.PlayMove(move); // invoking internal method
 
             //Assert
             _mockGameEngine.Verify(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)), Times.Once);

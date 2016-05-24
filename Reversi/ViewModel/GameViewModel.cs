@@ -106,7 +106,7 @@ namespace Reversi.ViewModel
             await PlayMove(move);
         }
 
-        private async Task PlayMove(Move move)
+        internal async Task PlayMove(Move move)
         {
             var response = await _engine.UpdateBoardWithMoveAsync(move);
             ProcessResponseFromEngine(response);
