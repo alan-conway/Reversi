@@ -21,7 +21,9 @@ Maybe it's unusual to list the tests first but it feels appropriate here because
 I started out writing the tests in this project using only xUnit and Moq, both of which I highly recommend.  I've now also started to make use of AutoFixture, which is also excellent  
 I've made frequent use of xUnit's support of _parameterised_ tests through its `[Theory] [InlineData(..)]` attributes - this is an easy way to reuse tests to check multiple scenarios without having to repeat any code.  
 
-AutoFixture helps to simplify constructing objects to test through its auto mocking container feature. Previously I was using my own builder pattern to handle creating differently constructed instances of my GameEngine class, but now I'm able to define what I need and let AutoFixture worry about mocking everything else and creating the objects.  
+AutoFixture helps to simplify constructing objects to test through its auto mocking container feature. Previously I was using my own builder pattern to handle creating differently constructed instances of my GameEngine class, but now I'm able to define what I need and let AutoFixture worry about mocking everything else and creating the objects.   
+I've written more about AutoFixture on my blog and you can [read more about it here](https://alan-conway.github.io/posts/autofixture-and-automocking.html)
+
 
 xUnit allows me to use the `async` keyword in test method signatures, which is great when I need to `await` the result of a `Task`. Here is an example of such a test to demonstrate:
 
