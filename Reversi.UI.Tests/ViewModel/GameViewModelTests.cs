@@ -37,9 +37,9 @@ namespace Reversi.UI.Tests.ViewModel
             var mockEventAggregator = fixture.Freeze<Mock<IEventAggregator>>();
             mockEventAggregator.Setup(ea => ea.GetEvent<CellSelectedEvent>())
                 .Returns(_cellSelectedEvent);
-
+                        
             _mockGameEngine = fixture.Freeze<Mock<IGameEngine>>();
-
+            
             _mockGameEngine.Setup(ge => ge.CreateNewGame())
                 .Returns(new Response(
                     Move.PassMove,
@@ -226,9 +226,14 @@ namespace Reversi.UI.Tests.ViewModel
         {
             //Arrange
             var mockGameOptions = new Mock<IGameOptions>();
+            mockGameOptions.Setup(go => go.StrategyName).Returns("ABC");
 
             _mockGameEngine.Setup(ge => ge.GameOptions)
                 .Returns(mockGameOptions.Object);
+
+            var strategyInfo = new StrategyInfo("ABC", false, 0);
+            _mockGameEngine.Setup(ge => ge.AvailableStrategies).Returns(new[] { strategyInfo });
+
 
             //Act
             _gameViewModel.ShowOptionsCommand.Execute(null);
@@ -245,11 +250,16 @@ namespace Reversi.UI.Tests.ViewModel
             //Arrange
             var gameOptions = new GameOptions()
             {
+                StrategyName = "ABC",
+                StrategyLevel = 1,
                 UserPlaysAsBlack = userPlaysBlack
             };
-
             _mockGameEngine.Setup(ge => ge.GameOptions)
                 .Returns(gameOptions);
+
+            var strategyInfo = new StrategyInfo(gameOptions.StrategyName, true, 1);
+            _mockGameEngine.Setup(ge => ge.AvailableStrategies)
+                .Returns(new[] { strategyInfo });
 
             //Act
             _gameViewModel.ShowOptionsCommand.Execute(null);
@@ -265,9 +275,11 @@ namespace Reversi.UI.Tests.ViewModel
         {
             //Arrange
             var mockGameOptions = new Mock<IGameOptions>();
+            mockGameOptions.Setup(go => go.StrategyName).Returns("ABC");
+            _mockGameEngine.Setup(ge => ge.GameOptions).Returns(mockGameOptions.Object);
 
-            _mockGameEngine.Setup(ge => ge.GameOptions)
-                .Returns(mockGameOptions.Object);
+            var strategyInfo = new StrategyInfo("ABC", true, 1);
+            _mockGameEngine.Setup(ge => ge.AvailableStrategies).Returns(new[] { strategyInfo });
 
             _mockDialogService.Setup(ds => ds.ShowOptionsDialog(It.IsAny<IDialogViewModel>()))
                 .Returns(DialogChoice.Cancel);
@@ -314,9 +326,19 @@ namespace Reversi.UI.Tests.ViewModel
             bool userPlaysBlack, bool isStartOfGame, int expectedCalls)
         {
             //Arrange                        
-            var initialOptions = new GameOptions() { UserPlaysAsBlack = userPlaysBlack };
-            var altOptions = new GameOptions() { UserPlaysAsBlack = !userPlaysBlack };
+            var initialOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = userPlaysBlack,
+                StrategyName = "ABC"                
+            };
+            var altOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = !userPlaysBlack,
+                StrategyName = "ABC"
+            };
             _mockGameEngine.Setup(ge => ge.GameOptions).Returns(initialOptions);
+            var strategyInfo = new StrategyInfo("ABC", false, 0);
+            _mockGameEngine.Setup(ge => ge.AvailableStrategies).Returns(new[] { strategyInfo });
 
             //simulate changing game options to switch first player
             _mockGameEngine.SetupSet(ge => ge.GameOptions = It.IsAny<IGameOptions>())

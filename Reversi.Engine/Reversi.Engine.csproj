@@ -54,6 +54,7 @@
     <Compile Include="Core\StrategyInfo.cs" />
     <Compile Include="Helpers\CaptureHelper.cs" />
     <Compile Include="Helpers\GameStatusExaminer.cs" />
+    <Compile Include="Helpers\StrategyProvider.cs" />
     <Compile Include="Interfaces\ICaptureHelper.cs" />
     <Compile Include="Interfaces\IGameContext.cs" />
     <Compile Include="Interfaces\IGameEngine.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Interfaces\IMoveStrategy.cs" />
     <Compile Include="Interfaces\IRandomiser.cs" />
     <Compile Include="Interfaces\IRandomMoveStrategy.cs" />
+    <Compile Include="Interfaces\IStrategyProvider.cs" />
     <Compile Include="Interfaces\IValidMoveFinder.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

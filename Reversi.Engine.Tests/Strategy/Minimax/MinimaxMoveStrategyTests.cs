@@ -53,6 +53,13 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
                 statusExaminer, treeNodeBuilder);
 
             fixture.Register<IMoveStrategy>(() => strategy);
+
+            var mockStrategyProvider = fixture.Freeze<Mock<IStrategyProvider>>();
+            mockStrategyProvider.Setup(sp => sp.GetStrategy(It.IsAny<string>()))
+                .Returns(strategy);
+            mockStrategyProvider.Setup(sp => sp.GetStrategyInfoCollection())
+                .Returns(new[] { strategy.StrategyInfo });
+
             var engine = fixture.Create<GameEngine>();
             engine.CreateNewGame();
 

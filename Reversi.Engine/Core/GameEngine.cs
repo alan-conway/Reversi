@@ -16,24 +16,25 @@ namespace Reversi.Engine.Core
         private IGameOptions _options;
         private ICaptureHelper _captureHelper;
         private IValidMoveFinder _validMoveFinder;
-        private IMoveStrategy _moveStrategy;
+        private IStrategyProvider _strategyProvider; 
         private IGameStatusExaminer _statusExaminer;
+        private IMoveStrategy _moveStrategy;
 
         public GameEngine(IGameContext context,
             IGameOptions options,
             ICaptureHelper captureHelper,
             IValidMoveFinder validMoveFinder,
-            IMoveStrategy moveStrategy,
+            IStrategyProvider strategyProvider,
             IGameStatusExaminer statusExaminer)
         {
             Context = context;
             _options = options;
             _captureHelper = captureHelper;
             _validMoveFinder = validMoveFinder;
-            _moveStrategy = moveStrategy;
+            _strategyProvider = strategyProvider;
             _statusExaminer = statusExaminer;
 
-            AvailableStrategies = new[] { _moveStrategy.StrategyInfo };
+            AvailableStrategies = _strategyProvider.GetStrategyInfoCollection();
             ApplyOptions(options);
         }
 
@@ -158,7 +159,7 @@ namespace Reversi.Engine.Core
 
         private void ApplyOptions(IGameOptions options)
         {
-            //TODO: set strategy to options.StrategyName
+            _moveStrategy = _strategyProvider.GetStrategy(options.StrategyName);
 
             if (_moveStrategy.StrategyInfo.IsMultiLevel)
             {

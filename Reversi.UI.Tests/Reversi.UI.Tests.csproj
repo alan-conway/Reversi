@@ -95,6 +95,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Converters\BoolToHiddenConverterTests.cs" />
     <Compile Include="Converters\PieceToColourConverterTests.cs" />
     <Compile Include="Converters\PieceToVisibilityConverter.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtension.cs" />

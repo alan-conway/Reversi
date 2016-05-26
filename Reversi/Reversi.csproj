@@ -86,6 +86,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\BoolToHiddenConverter.cs" />
     <Compile Include="Converters\PieceToVisibilityConverter.cs" />
     <Compile Include="Services\DelayProvider.cs" />
     <Compile Include="Services\IDelayProvider.cs" />

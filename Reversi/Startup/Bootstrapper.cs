@@ -19,6 +19,7 @@ using Reversi.Engine.Core;
 using Reversi.Services;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
 using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Random;
 
 namespace Reversi.Startup
 {
@@ -60,7 +61,17 @@ namespace Reversi.Startup
 
             Container.RegisterType<IMinimaxTreeEvaluator, MinimaxTreeEvaluator>();
             Container.RegisterType<IReversiTreeNodeBuilder, ReversiTreeNodeBuilder>();
-            Container.RegisterType<IMoveStrategy, MinimaxMoveStrategy>();
+            Container.RegisterType<IMoveStrategy, MinimaxMoveStrategy>("Minimax");
+            Container.RegisterType<IMoveStrategy, RandomMoveStrategy>("Random");
+
+
+            Container.RegisterType<IStrategyProvider, StrategyProvider>(
+                new InjectionConstructor(
+                    new ResolvedArrayParameter<IMoveStrategy>(
+                        new ResolvedParameter<IMoveStrategy>("Minimax"),
+                        new ResolvedParameter<IMoveStrategy>("Random")
+                )));
+                
 
             Container.RegisterType<IGameEngine, GameEngine>();
             Container.RegisterType<BoardViewModel>();

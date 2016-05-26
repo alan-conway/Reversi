@@ -16,7 +16,7 @@ namespace Reversi.ViewModel
     {
         private bool _userStartsNewGames;
         private DialogChoice _dialogChoice;
-        private string _selectedAlgorithm;
+        private StrategyInfo _selectedAlgorithm;
         private int _selectedLevel;
 
         public OptionsViewModel(IGameOptions options, IEnumerable<StrategyInfo> availableStrategies)
@@ -29,7 +29,7 @@ namespace Reversi.ViewModel
             StartingPlayerChoices = new[] {
                 new KeyValuePair<string, bool>("Human", true),
                 new KeyValuePair<string, bool>("Computer", false) };
-            AlgorithmChoices = new ObservableCollection<string>();
+            AlgorithmChoices = new ObservableCollection<StrategyInfo>();
             AlgorithmLevels = Enumerable.Range(1,9);
 
             UpdateWithStrategies(availableStrategies);
@@ -54,12 +54,12 @@ namespace Reversi.ViewModel
             }
         }
 
-        public ObservableCollection<string> AlgorithmChoices
+        public ObservableCollection<StrategyInfo> AlgorithmChoices
         {
             get; set;
         }
 
-        public string SelectedAlgorithm
+        public StrategyInfo SelectedAlgorithm
         {
             get { return _selectedAlgorithm; }
             set
@@ -99,7 +99,7 @@ namespace Reversi.ViewModel
             return new GameOptions()
             {
                 UserPlaysAsBlack = UserStartsNewGames,
-                StrategyName = SelectedAlgorithm,
+                StrategyName = SelectedAlgorithm.Name,
                 StrategyLevel = SelectedLevel
             };
         }
@@ -107,7 +107,7 @@ namespace Reversi.ViewModel
         private void UpdateWithGameOptions(IGameOptions options)
         {
             UserStartsNewGames = options.UserPlaysAsBlack;
-            SelectedAlgorithm = options.StrategyName;
+            SelectedAlgorithm = AlgorithmChoices.Single(a => a.Name == options.StrategyName);
             SelectedLevel = options.StrategyLevel;
         }
 
@@ -115,9 +115,9 @@ namespace Reversi.ViewModel
         {
             foreach(var strategy in strategyInfos)
             {
-                if (!AlgorithmChoices.Contains(strategy.Name))
+                if (!AlgorithmChoices.Any(a => a.Name == strategy.Name))
                 {
-                    AlgorithmChoices.Add(strategy.Name);
+                    AlgorithmChoices.Add(strategy);
                 }
             }
         }

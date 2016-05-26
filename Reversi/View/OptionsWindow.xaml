@@ -4,12 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Reversi.View"
+        xmlns:conv="clr-namespace:Reversi.Converters"
         mc:Ignorable="d"
         Title="Reversi - Edit Options" 
         Height="300" Width="350"
         WindowStartupLocation="CenterScreen">
-    <Grid Margin="30">
-
+    <Window.Resources>
+        <conv:BoolToHiddenConverter x:Key="BoolToHiddenConverter"/>
+    </Window.Resources>    
+    
+    <Grid Margin="30">        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
@@ -35,17 +39,20 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Text="AI Algorithm : "/>
         <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
                   ItemsSource="{Binding Path=AlgorithmChoices}"                  
-                  DisplayMemberPath="."
+                  DisplayMemberPath="Name"
                   SelectedValuePath="."
                   SelectedValue="{Binding Path=SelectedAlgorithm, Mode=TwoWay}"
                   IsSynchronizedWithCurrentItem="True"/>
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="AI Level : "/>
+        
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="AI Level : "
+                   Visibility="{Binding Path=SelectedAlgorithm.IsMultiLevel, Converter={StaticResource BoolToHiddenConverter}}"/>
         <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
                   ItemsSource="{Binding Path=AlgorithmLevels}"
                   DisplayMemberPath="."
                   SelectedValuePath="."
                   SelectedValue="{Binding Path=SelectedLevel, Mode=TwoWay}"
-                  IsSynchronizedWithCurrentItem="True"/>
+                  IsSynchronizedWithCurrentItem="True"
+                  Visibility="{Binding Path=SelectedAlgorithm.IsMultiLevel, Converter={StaticResource BoolToHiddenConverter}}"/>
         
         <Button 
                 Grid.Row="5" Grid.Column="1"

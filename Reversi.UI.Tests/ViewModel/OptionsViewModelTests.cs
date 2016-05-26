@@ -39,7 +39,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             //Assert
             Assert.Equal(playAsBlack, optionsViewModel.UserStartsNewGames);
-            Assert.Equal(strategyName, optionsViewModel.SelectedAlgorithm);
+            Assert.Equal(strategyName, optionsViewModel.SelectedAlgorithm.Name);
             Assert.Equal(strategyLevel, optionsViewModel.SelectedLevel);
         }
 
@@ -48,13 +48,16 @@ namespace Reversi.UI.Tests.ViewModel
             IEnumerable<StrategyInfo> strategies)
         {
             //Arrange - injected
+            var temp = new List<StrategyInfo>(strategies);
+            temp.Add(new StrategyInfo(gameOptions.StrategyName, true, 1));
+            strategies = temp;            
 
             //Act
             var optionsViewModel = new OptionsViewModel(gameOptions, strategies);
 
             //Assert
             Assert.True(strategies.Count() > 2); // just checking that we're testing something
-            Assert.Equal(strategies.Select(x => x.Name), optionsViewModel.AlgorithmChoices);
+            Assert.Equal(strategies, optionsViewModel.AlgorithmChoices);
         }
 
         [Theory]
@@ -73,13 +76,16 @@ namespace Reversi.UI.Tests.ViewModel
             };
             fixture.Inject<IGameOptions>(gameOptions);
 
+            fixture.Inject<IEnumerable<StrategyInfo>>(
+                new[] { new StrategyInfo(gameOptions.StrategyName, false, 0) });
+
             var optionsViewModel = fixture.Create<OptionsViewModel>();
             // changing the values
             var newPlayAsBlack = !playAsBlack;
             var newName = fixture.Create<string>();
             var newLevel = strategyLevel+1; 
             optionsViewModel.UserStartsNewGames = newPlayAsBlack;
-            optionsViewModel.SelectedAlgorithm = newName;
+            optionsViewModel.SelectedAlgorithm = new StrategyInfo(newName, true, 1);
             optionsViewModel.SelectedLevel = newLevel;
 
             //Act
@@ -97,6 +103,8 @@ namespace Reversi.UI.Tests.ViewModel
             //Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
             fixture.Inject<IGameOptions>(gameOptions);
+            fixture.Inject<IEnumerable<StrategyInfo>>(
+                new[] { new StrategyInfo(gameOptions.StrategyName, false, 0) });
 
             var optionsViewModel = fixture.Create<OptionsViewModel>();
             // changing the values
@@ -104,7 +112,7 @@ namespace Reversi.UI.Tests.ViewModel
             var newName = fixture.Create<string>();
             var newLevel = gameOptions.StrategyLevel + 1;
             optionsViewModel.UserStartsNewGames = newPlayAsBlack;
-            optionsViewModel.SelectedAlgorithm = newName;
+            optionsViewModel.SelectedAlgorithm = new StrategyInfo(newName, true, 1);
             optionsViewModel.SelectedLevel = newLevel;
 
             var mockWindow = fixture.Freeze<Mock<IDialogWindow>>();
@@ -128,7 +136,15 @@ namespace Reversi.UI.Tests.ViewModel
         {
             //Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            fixture.Inject<IGameOptions>(new GameOptions() { UserPlaysAsBlack = true });
+            var gameOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = true,
+                StrategyName = "ABC",
+                StrategyLevel = 1
+            };
+            fixture.Inject<IGameOptions>(gameOptions);
+            fixture.Inject<IEnumerable<StrategyInfo>>(
+                new[] { new StrategyInfo(gameOptions.StrategyName, false, 0) });
 
             var optionsViewModel = fixture.Create<OptionsViewModel>();
             optionsViewModel.UserStartsNewGames = false; // changing the value
@@ -150,6 +166,10 @@ namespace Reversi.UI.Tests.ViewModel
             IEnumerable<StrategyInfo> strategies)
         {
             //Arrange
+            var temp = new List<StrategyInfo>(strategies);
+            temp.Add(new StrategyInfo(gameOptions.StrategyName, true, 1));
+            strategies = temp;
+
             bool eventFired = false;
             var optionsViewModel = new OptionsViewModel(gameOptions, strategies);
             optionsViewModel.OnNotify(
@@ -174,7 +194,7 @@ namespace Reversi.UI.Tests.ViewModel
                 () => eventFired = true);
 
             //Act
-            optionsViewModel.SelectedAlgorithm = "newValue";
+            optionsViewModel.SelectedAlgorithm = new StrategyInfo("new value", true, 3);
 
             //Assert
             Assert.True(eventFired);

@@ -94,6 +94,7 @@
     <Compile Include="Helpers\CaptureHelperTests.cs" />
     <Compile Include="Helpers\GameStatusExaminerTests.cs" />
     <Compile Include="Helpers\LocationHelperTests.cs" />
+    <Compile Include="Helpers\StrategyProviderTests.cs" />
     <Compile Include="Helpers\ValidMoveFinderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategy\Minimax\Heuristics\CornerHeuristicTests.cs" />
