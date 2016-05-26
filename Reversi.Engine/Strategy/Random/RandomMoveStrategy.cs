@@ -13,6 +13,9 @@ namespace Reversi.Engine.Strategy.Random
     /// </summary>
     public class RandomMoveStrategy : IRandomMoveStrategy
     {
+        private const string Name = "Random";
+        private const bool IsMultiLevel = false;
+
         private IValidMoveFinder _moveFinder;
         private IRandomiser _random;
 
@@ -20,6 +23,16 @@ namespace Reversi.Engine.Strategy.Random
         {
             _random = random;
             _moveFinder = moveFinder;
+
+            StrategyInfo = new StrategyInfo(Name, IsMultiLevel, 1);
+        }
+
+        public StrategyInfo StrategyInfo { get; }
+
+        public void SetLevel(int level)
+        {
+            var msg = "RandomMoveStrategy does not support different levels";
+            throw new NotSupportedException(msg);
         }
 
         /// <summary>

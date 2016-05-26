@@ -26,13 +26,20 @@ namespace Reversi.Startup
     {
         public Bootstrapper()
         {
+            var userOptions = new GameOptions()
+            {
+                UserPlaysAsBlack = true,
+                StrategyName = "Minimax",
+                StrategyLevel = 4
+            };
+
             Container = new UnityContainer();
 
             Container.RegisterInstance<IEventAggregator>(new EventAggregator());
             Container.RegisterInstance<IGameContext>(new GameContext());
-            Container.RegisterInstance<IGameOptions>(new GameOptions());
             Container.RegisterInstance<IRandomiser>(new Randomiser());
             Container.RegisterInstance<IMoveOrdering>(new MoveOrdering());
+            Container.RegisterInstance<IGameOptions>(userOptions);
 
             Container.RegisterType<IDialogWindow, OptionsWindow>();
             Container.RegisterType<IMessageDialogService, MessageDialogService>();   
@@ -53,14 +60,7 @@ namespace Reversi.Startup
 
             Container.RegisterType<IMinimaxTreeEvaluator, MinimaxTreeEvaluator>();
             Container.RegisterType<IReversiTreeNodeBuilder, ReversiTreeNodeBuilder>();
-            Container.RegisterType<IMoveStrategy, MinimaxMoveStrategy>(
-                new InjectionConstructor(
-                    new ResolvedParameter<IMinimaxTreeEvaluator>(),
-                    new ResolvedParameter<IValidMoveFinder>(),                    
-                    new ResolvedParameter<IScoreProvider>(),
-                    new ResolvedParameter<IGameStatusExaminer>(),
-                    new ResolvedParameter<IReversiTreeNodeBuilder>(),
-                    6)); //RandomMoveStrategy>();
+            Container.RegisterType<IMoveStrategy, MinimaxMoveStrategy>();
 
             Container.RegisterType<IGameEngine, GameEngine>();
             Container.RegisterType<BoardViewModel>();
@@ -71,7 +71,6 @@ namespace Reversi.Startup
             Container.RegisterType<GameViewModel>();
             Container.RegisterType<OptionsViewModel>();
             Container.RegisterType<GameView>();
-
         }
 
         public IUnityContainer Container { get; set; }

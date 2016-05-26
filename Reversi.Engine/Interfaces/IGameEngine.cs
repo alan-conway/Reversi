@@ -58,6 +58,9 @@ namespace Reversi.Engine.Interfaces
         /// </summary>
         int MoveNumber { get; }
 
-
+        /// <summary>
+        /// Enumerates the IMoveStrategies that can be used
+        /// </summary>
+        IEnumerable<StrategyInfo> AvailableStrategies { get; }
     }
 }

@@ -16,24 +16,36 @@ namespace Reversi.Engine.Strategy.Minimax
     /// </summary>
     public class MinimaxMoveStrategy : IMoveStrategy
     {
-        private int _maxSearchDepth;
+        private const string Name = "Minimax";
+        private const bool IsMultiLevel = true;
+        
         private IMinimaxTreeEvaluator _minimax;
         private IValidMoveFinder _moveFinder;
         private IScoreProvider _scoreProvider;
         private IGameStatusExaminer _statusExaminer;
         private IReversiTreeNodeBuilder _treeNodeBuilder;
-
+        
         public MinimaxMoveStrategy(IMinimaxTreeEvaluator minimax,
             IValidMoveFinder moveFinder, IScoreProvider scoreProvider, 
-            IGameStatusExaminer statusExaminer, IReversiTreeNodeBuilder treeNodeBuilder, 
-            int maxSearchDepth)
+            IGameStatusExaminer statusExaminer, IReversiTreeNodeBuilder treeNodeBuilder)
         {
             _minimax = minimax;
             _moveFinder = moveFinder;
             _scoreProvider = scoreProvider;
             _treeNodeBuilder = treeNodeBuilder;
             _statusExaminer = statusExaminer;
-            _maxSearchDepth = maxSearchDepth;
+
+            StrategyInfo = new StrategyInfo(Name, IsMultiLevel, MaxSearchDepth);
+        }
+
+        public StrategyInfo StrategyInfo { get; private set; }
+
+        public int MaxSearchDepth { get; private set; } = 1;
+
+        public void SetLevel(int level)
+        {
+            MaxSearchDepth = level;
+            StrategyInfo = new StrategyInfo(Name, IsMultiLevel, level);            
         }
 
         /// <summary>
@@ -45,7 +57,6 @@ namespace Reversi.Engine.Strategy.Minimax
             {
                 return Move.PassMove;
             }
-
             bool isPlayer1 = context.CurrentPiece == Piece.Black;
             var treeNode = _treeNodeBuilder.CreateRootTreeNode(context, engine);
             var result = _minimax.EvaluateTree(treeNode, IsLeafNode, _scoreProvider, isPlayer1);
@@ -58,7 +69,7 @@ namespace Reversi.Engine.Strategy.Minimax
         private bool IsLeafNode(ITreeNode node)
         {
             var treeNode = node as IReversiTreeNode;
-            return treeNode.Depth >= _maxSearchDepth ||
+            return treeNode.Depth >= MaxSearchDepth ||
                 _statusExaminer.DetermineGameStatus(treeNode.Context) != GameStatus.InProgress;
         }
     }

@@ -9,13 +9,17 @@ namespace Reversi.Engine.Core
 {
     public class GameOptions : IGameOptions
     {
+        public string StrategyName { get; set; }
+        public int StrategyLevel { get; set; }
         public bool UserPlaysAsBlack { get; set; } = true;
 
         public IGameOptions Clone()
         {
             return new GameOptions()
             {
-                UserPlaysAsBlack = this.UserPlaysAsBlack
+                UserPlaysAsBlack = UserPlaysAsBlack,
+                StrategyName = StrategyName,
+                StrategyLevel = StrategyLevel
             };
         }
     }

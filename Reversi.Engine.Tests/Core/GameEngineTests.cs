@@ -27,6 +27,9 @@ namespace Reversi.Engine.Tests.Core
             mockLocationHelper.Setup(lh => lh.GetLocationsGroups(It.IsAny<int>()))
                 .Returns(new[] { new int[] { 0, 1 } });
 
+            var mockStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
+            mockStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
+
             _engine = fixture.Create<GameEngine>();
         }
 
@@ -64,6 +67,7 @@ namespace Reversi.Engine.Tests.Core
             var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
             mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
                 .Returns(Move.PassMove);
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
 
             var mockStatusExaminer = fixture.Freeze<Mock<IGameStatusExaminer>>();
             mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
@@ -124,7 +128,8 @@ namespace Reversi.Engine.Tests.Core
             var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
             mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
                 .Returns(new Move(0));
-            
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
+
             //engine should capture cell 1
             var mockCaptureHelper = fixture.Freeze<Mock<ICaptureHelper>>();
             mockCaptureHelper.Setup(ch => ch.CaptureEnemyPieces(It.IsAny<IGameContext>(), 0))
@@ -166,6 +171,7 @@ namespace Reversi.Engine.Tests.Core
             mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
                 It.IsAny<IGameEngine>()))
                 .Returns(Move.PassMove);
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
 
             var engine = fixture.Create<GameEngine>();
 
@@ -194,6 +200,7 @@ namespace Reversi.Engine.Tests.Core
             var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();//finds engine's replying move
             mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),It.IsAny<IGameEngine>()))
                 .Returns(fixture.Create<Move>());
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
 
             var engine = fixture.Create<GameEngine>();
             engine.CreateNewGame();
@@ -298,6 +305,7 @@ namespace Reversi.Engine.Tests.Core
             mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
                 It.IsAny<IGameEngine>()))
                 .Returns(new Move(1));
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(fixture.Create<StrategyInfo>());
 
             var engine = fixture.Create<GameEngine>();
 
@@ -313,6 +321,43 @@ namespace Reversi.Engine.Tests.Core
             Assert.Equal(Piece.None, engine.Context[0].Piece);
         }
 
+        [Fact]
+        public void ShouldReturnAvailableStrategiesMatchingStrategySupplied()
+        {
+            //Arrange
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            fixture.Inject<IGameContext>(new GameContext());
+            var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
+            var strategyInfo = fixture.Create<StrategyInfo>();
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(strategyInfo);
+
+            //Act
+            var engine = fixture.Create<GameEngine>();
+
+            //Assert 
+            Assert.Equal(strategyInfo.Name, engine.AvailableStrategies.First().Name);
+            Assert.Equal(1, engine.AvailableStrategies.Count());
+        }
+
+        [Fact]
+        public void ShouldApplyOptionsWhenChanged()
+        {
+            //Arrange
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            fixture.Inject<IGameContext>(new GameContext());
+            var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
+            var strategyInfo = fixture.Create<StrategyInfo>();
+            mockMoveStrategy.Setup(s => s.StrategyInfo).Returns(strategyInfo);
+            var engine = fixture.Create<GameEngine>();
+
+            //Act            
+            engine.GameOptions = new GameOptions() { StrategyLevel = 99 };
+
+            //Assert 
+            mockMoveStrategy.Verify(ms => ms.SetLevel(99), Times.Once);
+        }
 
     }
 }

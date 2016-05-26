@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="Core\GameContextTests.cs" />
     <Compile Include="Core\GameEngineTests.cs" />
+    <Compile Include="Core\GameOptionsTests.cs" />
     <Compile Include="Extensions\GameContextExtension.cs" />
     <Compile Include="Helpers\CaptureHelperTests.cs" />
     <Compile Include="Helpers\GameStatusExaminerTests.cs" />

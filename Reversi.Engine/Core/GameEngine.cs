@@ -32,6 +32,9 @@ namespace Reversi.Engine.Core
             _validMoveFinder = validMoveFinder;
             _moveStrategy = moveStrategy;
             _statusExaminer = statusExaminer;
+
+            AvailableStrategies = new[] { _moveStrategy.StrategyInfo };
+            ApplyOptions(options);
         }
 
         public IGameContext Context { get; }
@@ -39,9 +42,15 @@ namespace Reversi.Engine.Core
         public IGameOptions GameOptions
         {
             get { return _options.Clone(); }
-            set { _options = value.Clone(); }
+            set
+            {
+                _options = value.Clone();
+                ApplyOptions(_options);
+            }
         }
 
+        public IEnumerable<StrategyInfo> AvailableStrategies { get; }
+        
         public Response CreateNewGame()
         {
             //Initialise all to be blank
@@ -65,7 +74,7 @@ namespace Reversi.Engine.Core
                 return MakeReplyMove(Context);
             }
         }
-               
+        
         public int MoveNumber {  get { return Context.MoveNumber; } }
 
         /// <summary>
@@ -127,17 +136,7 @@ namespace Reversi.Engine.Core
 
             var status = _statusExaminer.DetermineGameStatus(moveContext);
 
-            //var validSubsequentMoves = _validMoveFinder.FindAllValidMoves(moveContext);
-            //if (!validSubsequentMoves.Any() && status == GameStatus.InProgress)
-            //{
-            //    // opponent has no valid moves but game is not over:
-            //    moveContext.SetMovePlayed(); // auto-skip opponents move
-            //    return MakeReplyMove(moveContext); // play another move (recursively)                
-            //}
-            //else
-            //{
-                return new Response(move, moveContext.Squares, status);
-            //}
+            return new Response(move, moveContext.Squares, status);
         }
         
         private static Piece GetEnemyPiece(Piece piece)
@@ -157,9 +156,15 @@ namespace Reversi.Engine.Core
             }
         }
 
-        
+        private void ApplyOptions(IGameOptions options)
+        {
+            //TODO: set strategy to options.StrategyName
 
-
+            if (_moveStrategy.StrategyInfo.IsMultiLevel)
+            {
+                _moveStrategy.SetLevel(options.StrategyLevel);
+            }
+        }
     }
 }
 

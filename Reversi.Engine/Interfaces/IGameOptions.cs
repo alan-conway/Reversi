@@ -9,6 +9,9 @@ namespace Reversi.Engine.Interfaces
     public interface IGameOptions
     {
         bool UserPlaysAsBlack { get; }
+        string StrategyName { get; }
+        int StrategyLevel { get; }
+
         IGameOptions Clone();
     }
 }

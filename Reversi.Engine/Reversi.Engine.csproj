@@ -51,6 +51,7 @@
     <Compile Include="Core\Randomiser.cs" />
     <Compile Include="Core\Response.cs" />
     <Compile Include="Core\Square.cs" />
+    <Compile Include="Core\StrategyInfo.cs" />
     <Compile Include="Helpers\CaptureHelper.cs" />
     <Compile Include="Helpers\GameStatusExaminer.cs" />
     <Compile Include="Interfaces\ICaptureHelper.cs" />

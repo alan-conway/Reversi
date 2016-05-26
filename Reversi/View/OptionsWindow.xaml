@@ -6,10 +6,13 @@
         xmlns:local="clr-namespace:Reversi.View"
         mc:Ignorable="d"
         Title="Reversi - Edit Options" 
-        Height="200" Width="350">
+        Height="300" Width="350"
+        WindowStartupLocation="CenterScreen">
     <Grid Margin="30">
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
@@ -21,28 +24,42 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Play as : "/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Starts new games : "/>
         <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
-                  ItemsSource="{Binding Path=UserColorChoices}"                  
+                  ItemsSource="{Binding Path=StartingPlayerChoices}"                  
                   DisplayMemberPath="Key"
                   SelectedValuePath="Value"
-                  SelectedValue="{Binding Path=UserPlaysAsBlack, Mode=TwoWay}"
+                  SelectedValue="{Binding Path=UserStartsNewGames, Mode=TwoWay}"
                   IsSynchronizedWithCurrentItem="True"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
-                   HorizontalAlignment="Right"
-                   Text="(Takes effect from the next new game)"/>
 
-            <Button 
-                Grid.Row="3" Grid.Column="1"
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="AI Algorithm : "/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                  ItemsSource="{Binding Path=AlgorithmChoices}"                  
+                  DisplayMemberPath="."
+                  SelectedValuePath="."
+                  SelectedValue="{Binding Path=SelectedAlgorithm, Mode=TwoWay}"
+                  IsSynchronizedWithCurrentItem="True"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="AI Level : "/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                  ItemsSource="{Binding Path=AlgorithmLevels}"
+                  DisplayMemberPath="."
+                  SelectedValuePath="."
+                  SelectedValue="{Binding Path=SelectedLevel, Mode=TwoWay}"
+                  IsSynchronizedWithCurrentItem="True"/>
+        
+        <Button 
+                Grid.Row="5" Grid.Column="1"
                 Command="{Binding Path=UndoChangesCommand}" 
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                Padding="5">Close Without Saving</Button>
+                Width="80"
+                Padding="5">Cancel</Button>
             <Button 
-                Grid.Row="3" Grid.Column="2"
+                Grid.Row="5" Grid.Column="2"
                 HorizontalAlignment="Right"
                 Command="{Binding Path=SaveOptionsCommand}" 
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" 
                 Margin="10 0 0 0"
-                Padding="5">Save And Close</Button>
+                Width="80"
+                Padding="5">OK</Button>
     </Grid>
 </Window>

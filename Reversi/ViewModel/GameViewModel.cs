@@ -61,7 +61,13 @@ namespace Reversi.ViewModel
 
         private void InitialiseNewGame()
         {
-            if (_gameStatus == GameStatus.InProgress)
+            InitialiseNewGame(true);
+        }
+
+        private void InitialiseNewGame(bool allowPrompt)
+        {
+            
+            if (allowPrompt && _gameStatus == GameStatus.InProgress)
             {
                 if (_dialogService.ShowYesNoDialog("New Game",
                     "Would you like to start a new game?") != DialogChoice.Yes)
@@ -83,11 +89,13 @@ namespace Reversi.ViewModel
 
         private void ShowOptionsWindow()
         {
-            var optionsViewModel = new OptionsViewModel(_engine.GameOptions);
+            var optionsViewModel = new OptionsViewModel(_engine.GameOptions, _engine.AvailableStrategies);
             if (_dialogService.ShowOptionsDialog(optionsViewModel) == DialogChoice.Ok)
             {
                 _engine.GameOptions = optionsViewModel.ToGameOptions();
             }
+
+            ApplyOptions(_engine.GameOptions);
         }
 
         /// <summary>
@@ -150,7 +158,17 @@ namespace Reversi.ViewModel
             StatusMessage = _statusMsgFormatter.GetStatusMessage(response.Status, response.Squares);
         }
 
-        
+        private void ApplyOptions(IGameOptions options)
+        {
+            bool firstPlayerHasChanged = (
+                (options.UserPlaysAsBlack && _engine.Context.CurrentPiece == Piece.White) ||
+                (!options.UserPlaysAsBlack && _engine.Context.CurrentPiece == Piece.Black));
+
+            if (firstPlayerHasChanged && _engine.MoveNumber <=2)
+            {
+                InitialiseNewGame(false);
+            }
+        }
 
        
     }

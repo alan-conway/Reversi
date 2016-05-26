@@ -305,5 +305,37 @@ namespace Reversi.UI.Tests.ViewModel
             _mockGameEngine.Verify(ge => ge.UpdateBoardWithMoveAsync(It.Is<Move>(m => m.Pass)), Times.Once());
         }
 
+        [Theory]
+        [InlineData(true, true, 2)]
+        [InlineData(false, true, 2)]
+        [InlineData(true, false, 1)]
+        [InlineData(false, false, 1)]
+        public void ShouldInitialiseNewGameIfFirstPlayerOptionChangesAtStartOfGame(
+            bool userPlaysBlack, bool isStartOfGame, int expectedCalls)
+        {
+            //Arrange                        
+            var initialOptions = new GameOptions() { UserPlaysAsBlack = userPlaysBlack };
+            var altOptions = new GameOptions() { UserPlaysAsBlack = !userPlaysBlack };
+            _mockGameEngine.Setup(ge => ge.GameOptions).Returns(initialOptions);
+
+            //simulate changing game options to switch first player
+            _mockGameEngine.SetupSet(ge => ge.GameOptions = It.IsAny<IGameOptions>())
+                .Callback(() => _mockGameEngine.Setup(ge => ge.GameOptions)
+                                .Returns(altOptions));
+
+            //simulate being at start or later in the game
+            var context = new GameContext();
+            if (!userPlaysBlack) { context.SetMovePlayed(); }
+            if (!isStartOfGame) { context.SetMovePlayed(); context.SetMovePlayed(); }
+            _mockGameEngine.Setup(ge => ge.Context).Returns(context);
+            _mockGameEngine.Setup(ge => ge.MoveNumber).Returns(context.MoveNumber);
+
+            //Act
+            _gameViewModel.ShowOptionsCommand.Execute(null);
+
+            //Assert
+            _mockGameEngine.Verify(ge => ge.CreateNewGame(), Times.Exactly(expectedCalls));
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using Reversi.Engine.Interfaces;
 using Reversi.Services.MessageDialogs;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,41 +14,82 @@ namespace Reversi.ViewModel
 {
     public class OptionsViewModel : ViewModelBase, IDialogViewModel
     {
-        private bool _userPlaysAsBlack;
+        private bool _userStartsNewGames;
         private DialogChoice _dialogChoice;
+        private string _selectedAlgorithm;
+        private int _selectedLevel;
 
-        public OptionsViewModel(IGameOptions options)
+        public OptionsViewModel(IGameOptions options, IEnumerable<StrategyInfo> availableStrategies)
         {
             _dialogChoice = DialogChoice.Cancel;
 
             SaveOptionsCommand = new DelegateCommand<IDialogWindow>(ExecuteSaveOptions);
             UndoChangesCommand = new DelegateCommand<IDialogWindow>(ExecuteUndoChanges);
 
-            UserColorChoices = new[] {
-                new KeyValuePair<string, bool>("Black", true),
-                new KeyValuePair<string, bool>("White", false) };
+            StartingPlayerChoices = new[] {
+                new KeyValuePair<string, bool>("Human", true),
+                new KeyValuePair<string, bool>("Computer", false) };
+            AlgorithmChoices = new ObservableCollection<string>();
+            AlgorithmLevels = Enumerable.Range(1,9);
 
-            FromGameOptions(options);
+            UpdateWithStrategies(availableStrategies);
+            UpdateWithGameOptions(options);
         }
 
-        public IEnumerable<KeyValuePair<string, bool>> UserColorChoices
+        public IEnumerable<KeyValuePair<string, bool>> StartingPlayerChoices
         {
             get; set;
         }
-
-        public bool UserPlaysAsBlack
+                
+        public bool UserStartsNewGames
         {
-            get { return _userPlaysAsBlack; }
+            get { return _userStartsNewGames; }
             set
             {
-                if (_userPlaysAsBlack != value)
+                if (_userStartsNewGames != value)
                 {
-                    _userPlaysAsBlack = value;
+                    _userStartsNewGames = value;
                     Notify();
                 }
             }
         }
-        
+
+        public ObservableCollection<string> AlgorithmChoices
+        {
+            get; set;
+        }
+
+        public string SelectedAlgorithm
+        {
+            get { return _selectedAlgorithm; }
+            set
+            {
+                if (_selectedAlgorithm != value)
+                {
+                    _selectedAlgorithm = value;
+                    Notify();
+                }
+            }
+        }
+
+        public IEnumerable<int> AlgorithmLevels
+        {
+            get; set;
+        }
+
+        public int SelectedLevel
+        {
+            get { return _selectedLevel; }
+            set
+            {
+                if (_selectedLevel != value)
+                {
+                    _selectedLevel = value;
+                    Notify();
+                }
+            }
+        }
+
         public ICommand SaveOptionsCommand { get; }
 
         public ICommand UndoChangesCommand { get; }
@@ -56,14 +98,30 @@ namespace Reversi.ViewModel
         {
             return new GameOptions()
             {
-                UserPlaysAsBlack = UserPlaysAsBlack
+                UserPlaysAsBlack = UserStartsNewGames,
+                StrategyName = SelectedAlgorithm,
+                StrategyLevel = SelectedLevel
             };
         }
 
-        private void FromGameOptions(IGameOptions options)
+        private void UpdateWithGameOptions(IGameOptions options)
         {
-            UserPlaysAsBlack = options.UserPlaysAsBlack;
+            UserStartsNewGames = options.UserPlaysAsBlack;
+            SelectedAlgorithm = options.StrategyName;
+            SelectedLevel = options.StrategyLevel;
         }
+
+        private void UpdateWithStrategies(IEnumerable<StrategyInfo> strategyInfos)
+        {
+            foreach(var strategy in strategyInfos)
+            {
+                if (!AlgorithmChoices.Contains(strategy.Name))
+                {
+                    AlgorithmChoices.Add(strategy.Name);
+                }
+            }
+        }
+
 
         private void ExecuteUndoChanges(IDialogWindow window)
         {

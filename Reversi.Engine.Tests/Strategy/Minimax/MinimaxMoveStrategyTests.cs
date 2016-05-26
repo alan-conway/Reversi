@@ -15,6 +15,7 @@ using Reversi.Engine.Strategy.Minimax;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
 using Reversi.Engine.Strategy.Minimax.Interfaces;
 using Xunit;
+using Ploeh.AutoFixture.Xunit2;
 
 namespace Reversi.Engine.Tests.Strategy.Minimax
 {
@@ -27,7 +28,6 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             //more of an integration test:
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
             fixture.Inject<ILocationHelper>(fixture.Freeze<LocationHelper>());
-            fixture.Inject<IGameOptions>(fixture.Create<GameOptions>());
             fixture.Inject<ICaptureHelper>(fixture.Create<CaptureHelper>());
             fixture.Inject<IMoveOrdering>(fixture.Create<MoveOrdering>());
             fixture.Inject<IGameContext>(fixture.Create<GameContext>());
@@ -45,9 +45,12 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             var minimax = fixture.Create<MinimaxTreeEvaluator>();
             var scoreProvider = new ReversiScoreProvider(winLoseHeuristic,
                 cornerHeuristic, mobilityHeuristic);
-            
+
+            var gameOptions = fixture.Create<GameOptions>();
+            gameOptions.StrategyLevel = 1;
+            fixture.Inject<IGameOptions>(gameOptions);
             var strategy = new MinimaxMoveStrategy(minimax, moveFinder, scoreProvider,
-                statusExaminer, treeNodeBuilder, 1);
+                statusExaminer, treeNodeBuilder);
 
             fixture.Register<IMoveStrategy>(() => strategy);
             var engine = fixture.Create<GameEngine>();
@@ -63,6 +66,23 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
 
             //Assert 
             Assert.Equal(18, move.LocationPlayed); // 18 gives white greatest mobility
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        [InlineData(8)]
+        public void ShouldSetSearchDepthWhenChangingLevel(int level)
+        {
+            //Arrange
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var strategy = fixture.Create<MinimaxMoveStrategy>();
+
+            //Act
+            strategy.SetLevel(level);
+
+            //Assert
+            Assert.Equal(level, strategy.MaxSearchDepth);
         }
     }
 }
