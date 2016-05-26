@@ -121,7 +121,11 @@ namespace Reversi.ViewModel
 
             if (response.Status == GameStatus.InProgress)
             {
-                response = await _engine.MakeReplyMoveAsync();
+                var pauseTask = _delayProvider.Delay(100);
+                var replyMoveTask = _engine.MakeReplyMoveAsync();
+
+                await Task.WhenAll(pauseTask, replyMoveTask);
+                response = replyMoveTask.Result;
                 ProcessResponseFromEngine(response);
 
                 if (response.Status == GameStatus.InProgress &&
