@@ -1,10 +1,11 @@
-## Creating a [Reversi game](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) with TDD  
+## Creating a Reversi game with TDD  
 `#TDD #xUnit #Moq #WPF #MVVM #Prism #Unity #TPL #async #AutoFixture`
 
-[![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)      [Source Code](https://github.com/alan-conway/Reversi)
+[![Build status](https://ci.appveyor.com/api/projects/status/7236icqvy63ponk9/branch/master?svg=true)](https://ci.appveyor.com/project/alan-conway/reversi/branch/master)     
 
-The goal of this project was to create, using TDD, a working game of Reversi as a basis for learning about AI.  
-If you'd like to play the game, you can do so by fetching the zipped binaries from [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and running `Reversi.exe` from a windows machine with an up-to-date .net runtime on it.
+The goal of this project was to create, using TDD, a working game of Reversi as a basis for learning about AI. 
+To play the game you can download the zipped binaries from  [here](https://ci.appveyor.com/api/projects/alan-conway/reversi/artifacts/Reversi.zip?branch=master&job=Configuration%3A+Release) and run `Reversi.exe` from a windows machine with an up-to-date .net runtime on it.  
+I will be discussing some aspects of this development process on my blog, which can follow [here](https://alan-conway.github.io/). You can find the source code [here](https://github.com/alan-conway/Reversi). 
 
 There are main components in this project are:  
 
