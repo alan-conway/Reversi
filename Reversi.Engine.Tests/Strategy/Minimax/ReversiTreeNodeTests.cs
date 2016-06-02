@@ -21,7 +21,7 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
 
             var mockTreeNodeBuilder = new Mock<IReversiTreeNodeBuilder>();
             mockTreeNodeBuilder.Setup(
-                tnb => tnb.CreateNextTreeNodes(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
+                tnb => tnb.CreateNextTreeNodes(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()))
                 .Returns(new List<IReversiTreeNode>() {
                     mockChildTreeNode.Object        
                 });

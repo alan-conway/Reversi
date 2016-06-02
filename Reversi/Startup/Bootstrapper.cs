@@ -48,6 +48,7 @@ namespace Reversi.Startup
             Container.RegisterType<ICaptureHelper, CaptureHelper>();
             Container.RegisterType<IValidMoveFinder, ValidMoveFinder>();
             Container.RegisterType<IGameStatusExaminer, GameStatusExaminer>();
+            Container.RegisterType<IMovePlayer, MovePlayer>();
 
             Container.RegisterType<IHeuristic, WinLoseHeuristic>("WinLoseHeuristic");
             Container.RegisterType<IHeuristic, CornerHeuristic>("CornerHeuristic");

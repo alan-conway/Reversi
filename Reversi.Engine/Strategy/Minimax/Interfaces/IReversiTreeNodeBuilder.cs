@@ -9,8 +9,8 @@ namespace Reversi.Engine.Strategy.Minimax.Interfaces
     /// </summary>
     public interface IReversiTreeNodeBuilder
     {
-        IReversiTreeNode CreateRootTreeNode(IGameContext context, IGameEngine engine);
+        IReversiTreeNode CreateRootTreeNode(IGameContext context, IMovePlayer movePlayer);
 
-        List<IReversiTreeNode> CreateNextTreeNodes(IGameContext context, IGameEngine engine);
+        List<IReversiTreeNode> CreateNextTreeNodes(IGameContext context, IMovePlayer movePlayer);
     }
 }

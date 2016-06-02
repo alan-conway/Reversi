@@ -13,7 +13,7 @@ namespace Reversi.Engine.Interfaces
         /// <summary>
         /// Choose a (hopefully optimal) move to play 
         /// </summary>
-        Move ChooseMove(IGameContext context, IGameEngine engine);
+        Move ChooseMove(IGameContext context, IMovePlayer movePlayer);
 
         /// <summary>
         /// Sets the level/strength/depth that the computer will play at
