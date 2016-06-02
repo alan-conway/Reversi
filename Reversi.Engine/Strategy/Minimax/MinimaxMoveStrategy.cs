@@ -51,14 +51,14 @@ namespace Reversi.Engine.Strategy.Minimax
         /// <summary>
         /// Calls out to the external IMinimaxTreeEvaluator
         /// </summary>
-        public Move ChooseMove(IGameContext context, IGameEngine engine)
+        public Move ChooseMove(IGameContext context, IMovePlayer movePlayer)
         {
             if (!_moveFinder.IsAnyMoveValid(context))
             {
                 return Move.PassMove;
             }
             bool isPlayer1 = context.CurrentPiece == Piece.Black;
-            var treeNode = _treeNodeBuilder.CreateRootTreeNode(context, engine);
+            var treeNode = _treeNodeBuilder.CreateRootTreeNode(context, movePlayer);
             var result = _minimax.EvaluateTree(treeNode, IsLeafNode, _scoreProvider, isPlayer1);
             return new Move(((IReversiTreeNode)result.TreeNode).MoveLocation);
         }

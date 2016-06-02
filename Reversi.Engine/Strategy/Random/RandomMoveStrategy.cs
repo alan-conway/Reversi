@@ -38,7 +38,7 @@ namespace Reversi.Engine.Strategy.Random
         /// <summary>
         /// Choose any random valid move
         /// </summary>
-        public Move ChooseMove(IGameContext context, IGameEngine engine)
+        public Move ChooseMove(IGameContext context, IMovePlayer movePlayer)
         {
             var allMoves = _moveFinder.FindAllValidMoves(context);
             if (allMoves.Any())

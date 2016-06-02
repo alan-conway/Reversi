@@ -32,23 +32,23 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             mockMoveOrdering.Setup(mo => mo.OrderMoves(context, It.IsAny<IEnumerable<int>>()))
                 .Returns(new[] { 1, 2, 3 });
 
-            var mockEngine = fixture.Freeze<Mock<IGameEngine>>();            
-            mockEngine.Setup(e => e.UpdateBoardWithMove(
+            var mockMovePlayer = fixture.Freeze<Mock<IMovePlayer>>();
+            mockMovePlayer.Setup(mp => mp.PlayMove(
                 It.Is<Move>(m => m.LocationPlayed == 1), It.IsAny<IGameContext>()))
-                .Returns(new Response(new Move(1), GetSquares(1)));
+                .Returns(GetMoveResult(1));
 
-            mockEngine.Setup(e => e.UpdateBoardWithMove(
+            mockMovePlayer.Setup(mp => mp.PlayMove(
                 It.Is<Move>(m => m.LocationPlayed == 2), It.IsAny<IGameContext>()))
-                .Returns(new Response(new Move(2), GetSquares(2)));
+                .Returns(GetMoveResult(2));
 
-            mockEngine.Setup(e => e.UpdateBoardWithMove(
+            mockMovePlayer.Setup(mp => mp.PlayMove(
                 It.Is<Move>(m => m.LocationPlayed == 3), It.IsAny<IGameContext>()))
-                .Returns(new Response(new Move(3), GetSquares(3)));
+                .Returns(GetMoveResult(3));
 
             var treeNodeBuilder = fixture.Create<ReversiTreeNodeBuilder>();
 
             //Act
-            var treeNodes = treeNodeBuilder.CreateNextTreeNodes(context, mockEngine.Object);
+            var treeNodes = treeNodeBuilder.CreateNextTreeNodes(context, mockMovePlayer.Object);
 
             //Assert
             Assert.Equal(3, treeNodes.Count);
@@ -69,6 +69,13 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
                 .ToArray();
             squares[index].Piece = Piece.Black;
             return squares;
+        }
+
+        private MoveResult GetMoveResult(int index)
+        {
+            var context = new GameContext();
+            context.SetPiece(index, Piece.Black);
+            return new MoveResult(GameStatus.InProgress,context);
         }
     }
 }

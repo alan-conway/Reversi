@@ -20,12 +20,12 @@ namespace Reversi.Engine.Strategy.Minimax
     {
         private List<IReversiTreeNode> _children;
         private IReversiTreeNodeBuilder _treeNodeBuilder;
-        private IGameEngine _engine;
+        private IMovePlayer _movePlayer;
 
-        public ReversiTreeNode(int moveLocation, IGameContext context, 
-            IGameEngine engine, IReversiTreeNodeBuilder treeBuilder)
+        public ReversiTreeNode(int moveLocation, IGameContext context,
+            IMovePlayer movePlayer, IReversiTreeNodeBuilder treeBuilder)
         {
-            _engine = engine;
+            _movePlayer = movePlayer;
             MoveLocation = moveLocation;
             Context = context;
             _treeNodeBuilder = treeBuilder;
@@ -40,7 +40,7 @@ namespace Reversi.Engine.Strategy.Minimax
             // construct child nodes lazily when requested
             if (_children == null)
             {
-                _children = _treeNodeBuilder.CreateNextTreeNodes(Context, _engine);
+                _children = _treeNodeBuilder.CreateNextTreeNodes(Context, _movePlayer);
                 _children.ForEach(c => c.Depth = Depth + 1);
             }
             return _children;

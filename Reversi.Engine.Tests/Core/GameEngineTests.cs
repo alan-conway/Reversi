@@ -17,7 +17,8 @@ namespace Reversi.Engine.Tests.Core
     public class GameEngineTests
     {
         private IGameEngine _engine;
-        
+        private Mock<IMovePlayer> _mockMovePlayer;
+
         public GameEngineTests()
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -38,6 +39,8 @@ namespace Reversi.Engine.Tests.Core
             mockStrategyProvider.Setup(sp => sp.GetStrategyInfoCollection())
                 .Returns(new[] { strategyInfo });
 
+            _mockMovePlayer = fixture.Freeze<Mock<IMovePlayer>>();
+            
             _engine = fixture.Create<GameEngine>();
         }
 
@@ -58,10 +61,10 @@ namespace Reversi.Engine.Tests.Core
         }
 
         [Theory]
-        [InlineData(true, 2, 1)]
-        [InlineData(false, 1, 0)]
+        [InlineData(true, 1)]
+        [InlineData(false, 0)]
         public void ShouldExpectEngineToMakeFirstMoveWhenUserPlaysAsWhite(
-            bool userPlaysWhite, int expectedNumMoves, int expectedNumMoveChoices)
+            bool userPlaysWhite, int expectedNumMoveChoices)
         {
             //Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -72,13 +75,13 @@ namespace Reversi.Engine.Tests.Core
             mockMoveFinder.Setup(mf => mf.FindAllValidMoves(It.IsAny<IGameContext>()))
                 .Returns(new[] { 0 });
 
-            var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
-                .Returns(Move.PassMove);
+            var mockMovePlayer = fixture.Freeze<Mock<IMovePlayer>>();
+            mockMovePlayer.Setup(mp => mp.PlayMove(It.IsAny<Move>(), It.IsAny<IGameContext>()))
+                .Returns(new MoveResult(GameStatus.Draw, new GameContext()));
 
-            var mockStatusExaminer = fixture.Freeze<Mock<IGameStatusExaminer>>();
-            mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
-                .Returns(GameStatus.InProgress);
+            var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()))
+                .Returns(Move.PassMove);
 
             var engine = fixture.Create<GameEngine>();
             
@@ -86,30 +89,18 @@ namespace Reversi.Engine.Tests.Core
             var response = engine.CreateNewGame();
 
             //Assert
-            Assert.Equal(expectedNumMoves, engine.MoveNumber);
-            mockMoveStrategy.Verify(ms => ms.ChooseMove(It.IsAny<IGameContext>(), engine), 
+            mockMoveStrategy.Verify(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()), 
                 Times.Exactly(expectedNumMoveChoices));
-
         }
 
         [Fact]
-        public async void ShouldSetAllSquaresAsInvalidAfterUpdatingBoardWithMove()
+        public async void ShouldProvideSquaresFromResultInMoveReponse()
         {
             //Arrange
-            _engine.CreateNewGame();
-            Move move = new Move(19);
-
-            //Act
-            var response = await _engine.UpdateBoardWithMoveAsync(move);
-
-            //Assert
-            Assert.True(response.Squares.All(s => !s.IsValidMove));
-        }
-
-        [Fact]
-        public async void ShouldHavePlayersPieceInSquareAfterUpdatingBoardWithMove()
-        {
-            //Arrange
+            var contextToReturn = new GameContext();
+            contextToReturn.SetPiece(19, Piece.Black);
+            _mockMovePlayer.Setup(mp => mp.PlayMove(It.IsAny<Move>(), It.IsAny<IGameContext>()))
+                .Returns(new MoveResult(GameStatus.InProgress, contextToReturn));
             _engine.CreateNewGame();
             Move move = new Move(19);
 
@@ -121,26 +112,20 @@ namespace Reversi.Engine.Tests.Core
         }
 
         [Fact]
-        public async void ShouldHaveEnginesPieceInSquareAfterUpdatingBoardWithReply()
+        public async void ShouldProvideSquaresFromResultInReplyReponse()
         {
             //Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            var context = fixture.Create<GameContext>();
-            context.SetPiece(Piece.Black, 1).SetPiece(Piece.White, 2);
-            context.SetMovePlayed(); // indicate that it's the engine's turn to play
-            fixture.Inject<IGameContext>(context);
-
-            //engine should play in cell 0:
+            var contextToReturn = new GameContext();
+            contextToReturn.SetPiece(19, Piece.Black);
+            var mockMovePlayer = fixture.Freeze<Mock<IMovePlayer>>();
+            mockMovePlayer.Setup(mp => mp.PlayMove(It.IsAny<Move>(), It.IsAny<IGameContext>()))
+                .Returns(new MoveResult(GameStatus.InProgress, contextToReturn));
 
             var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()))
                 .Returns(new Move(0));
-
-            //engine should capture cell 1
-            var mockCaptureHelper = fixture.Freeze<Mock<ICaptureHelper>>();
-            mockCaptureHelper.Setup(ch => ch.CaptureEnemyPieces(It.IsAny<IGameContext>(), 0))
-                .Callback(() => context.SetPiece(1, Piece.White));
 
             var engine = fixture.Create<GameEngine>();
 
@@ -148,15 +133,15 @@ namespace Reversi.Engine.Tests.Core
             var response = await engine.MakeReplyMoveAsync();
 
             //Assert
-            Assert.Equal(Piece.White, response.Squares[0].Piece);
-            Assert.Equal(Piece.White, response.Squares[1].Piece);
-            Assert.Equal(Piece.White, response.Squares[2].Piece);
+            Assert.Equal(Piece.Black, response.Squares[19].Piece);
         }
 
         [Fact]
-        public async void ShouldUpdateMoveNumberAfterUpdatingBoardWithOpponentsMove()
+        public async void ShouldProvideStatusFromResultInMoveResponse()
         {
             //Arrange
+            _mockMovePlayer.Setup(mp => mp.PlayMove(It.IsAny<Move>(), It.IsAny<IGameContext>()))
+                .Returns(new MoveResult(GameStatus.Draw, new GameContext()));
             _engine.CreateNewGame();
             Move move = new Move(19);
 
@@ -164,59 +149,30 @@ namespace Reversi.Engine.Tests.Core
             var response = await _engine.UpdateBoardWithMoveAsync(move);
 
             //Assert
-            Assert.Equal(2, _engine.MoveNumber);
+            Assert.Equal(GameStatus.Draw, response.Status);
         }
 
         [Fact]
-        public async void ShouldUpdateMoveNumberAfterReplyingWithEnginesMove()
+        public async void ShouldProvideStatusFromResultInReplyReponse()
         {
             //Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            fixture.Inject<IGameContext>(new GameContext());
+
+            var mockMovePlayer = fixture.Freeze<Mock<IMovePlayer>>();
+            mockMovePlayer.Setup(mp => mp.PlayMove(It.IsAny<Move>(), It.IsAny<IGameContext>()))
+                .Returns(new MoveResult(GameStatus.Draw, new GameContext()));
 
             var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(),
-                It.IsAny<IGameEngine>()))
-                .Returns(Move.PassMove);
+            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()))
+                .Returns(new Move(0));
 
             var engine = fixture.Create<GameEngine>();
 
-            Move move = new Move(19); // represents user's move
-            var response = await engine.UpdateBoardWithMoveAsync(move); // opponent's move
-
             //Act
-            await engine.MakeReplyMoveAsync(); // engine's reply
+            var response = await engine.MakeReplyMoveAsync();
 
             //Assert
-            Assert.Equal(3, engine.MoveNumber);
-        }
-
-        [Theory]
-        [InlineData(GameStatus.InProgress)]
-        [InlineData(GameStatus.BlackWins)]
-        [InlineData(GameStatus.WhiteWins)]
-        [InlineData(GameStatus.Draw)]
-        public async void ShouldReportCorrectStatusInReponse(GameStatus gameStatus)
-        {
-            //Arrange
-            var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var mockStatusExaminer = fixture.Freeze<Mock<IGameStatusExaminer>>();
-            mockStatusExaminer.Setup(se => se.DetermineGameStatus(It.IsAny<IGameContext>()))
-                .Returns(gameStatus);
-
-            var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
-                .Returns(fixture.Create<Move>());
-
-            var engine = fixture.Create<GameEngine>();
-            engine.CreateNewGame();
-            Move move = new Move(19);
-
-            //Act
-            var response = await engine.UpdateBoardWithMoveAsync(move);
-
-            //Assert
-            Assert.Equal(gameStatus, response.Status);
+            Assert.Equal(GameStatus.Draw, response.Status);
         }
         
         public async void ShouldAutoSkipOpponentsMoveIfNoSuchMoveIsAvailable()
@@ -245,7 +201,7 @@ namespace Reversi.Engine.Tests.Core
 
             var mockMoveStrategy = fixture.Freeze<Mock<IMoveStrategy>>();
             mockMoveStrategy.Setup(mc => mc.ChooseMove(It.IsAny<IGameContext>(),
-                It.IsAny<IGameEngine>()))
+                It.IsAny<IMovePlayer>()))
                 .Returns(getWhiteMove(context));
 
             var mockStatusExaminer = fixture.Freeze<Mock<IGameStatusExaminer>>();
@@ -260,72 +216,14 @@ namespace Reversi.Engine.Tests.Core
 
             //Assert - should have been called twice
             mockMoveStrategy.Verify(ms => 
-                ms.ChooseMove(It.IsAny<IGameContext>(),
-                    It.IsAny<IGameEngine>()), 
+                ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IMovePlayer>()), 
                 Times.Exactly(2));
 
             mockValidMoveFinder.Verify(vmf =>
                 vmf.FindAllValidMoves(It.IsAny<IGameContext>()), 
                 Times.Exactly(2));
         }
-
-        [Fact]
-        public void ShouldUpdateContextSuppliedWhenUpdatingBoardWithMove()
-        {
-            //Arrange
-            var externalContext = new GameContext();
-            //move1:
-            externalContext.SetPiece(0, Piece.Black);
-            externalContext.SetMovePlayed();
-            //move2:
-            externalContext.SetPiece(1, Piece.White);
-            externalContext.SetMovePlayed();
-            //move3 - to be played in the call to the engine:
-            var move = new Move(2);
-
-            //Act
-            _engine.UpdateBoardWithMove(move, externalContext);
-
-            //Assert 
-            // external context should now be on move 4
-            Assert.Equal(4, externalContext.MoveNumber);
-            Assert.Equal(Piece.Black, externalContext[0].Piece);
-            // engine's internal context should be unchanged from start of game
-            Assert.Equal(1, _engine.Context.MoveNumber);
-            Assert.Equal(Piece.None, _engine.Context[0].Piece);
-        }
-
-        [Fact]
-        public void ShouldUpdateContextSuppliedWhenReplyingWithEnginesMove()
-        {
-            //Arrange
-            var fixture = new Fixture().Customize(new AutoMoqCustomization());
-
-            var externalContext = new GameContext();
-            //move1:
-            externalContext.SetPiece(0, Piece.Black);
-            externalContext.SetMovePlayed();
-
-            fixture.Inject<IGameContext>(new GameContext());
-            var mockMoveStrategy = SetUpStrategy(fixture, fixture.Create<StrategyInfo>());
-            mockMoveStrategy.Setup(ms => ms.ChooseMove(It.IsAny<IGameContext>(), It.IsAny<IGameEngine>()))
-                .Returns(new Move(1));
-            
-
-            var engine = fixture.Create<GameEngine>();
-
-            //Act
-            engine.MakeReplyMove(externalContext); // this will be move 2
-
-            //Assert 
-            // external context should now be on move 3
-            Assert.Equal(3, externalContext.MoveNumber);
-            Assert.Equal(Piece.Black, externalContext[0].Piece);
-            // engine's internal context should be unchanged from start of game
-            Assert.Equal(1, engine.Context.MoveNumber);
-            Assert.Equal(Piece.None, engine.Context[0].Piece);
-        }
-
+        
         [Fact]
         public void ShouldReturnAvailableStrategiesIncludingStrategySupplied()
         {

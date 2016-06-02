@@ -47,6 +47,7 @@
     <Compile Include="Core\GameOptions.cs" />
     <Compile Include="Core\GameStatus.cs" />
     <Compile Include="Core\Move.cs" />
+    <Compile Include="Core\MoveResult.cs" />
     <Compile Include="Core\Piece.cs" />
     <Compile Include="Core\Randomiser.cs" />
     <Compile Include="Core\Response.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Core\StrategyInfo.cs" />
     <Compile Include="Helpers\CaptureHelper.cs" />
     <Compile Include="Helpers\GameStatusExaminer.cs" />
+    <Compile Include="Helpers\MovePlayer.cs" />
     <Compile Include="Helpers\StrategyProvider.cs" />
     <Compile Include="Interfaces\ICaptureHelper.cs" />
     <Compile Include="Interfaces\IGameContext.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Interfaces\IGameOptions.cs" />
     <Compile Include="Interfaces\IGameStatusExaminer.cs" />
     <Compile Include="Interfaces\ILocationHelper.cs" />
+    <Compile Include="Interfaces\IMovePlayer.cs" />
     <Compile Include="Interfaces\IMoveStrategy.cs" />
     <Compile Include="Interfaces\IRandomiser.cs" />
     <Compile Include="Interfaces\IRandomMoveStrategy.cs" />

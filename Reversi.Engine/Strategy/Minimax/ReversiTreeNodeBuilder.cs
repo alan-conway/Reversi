@@ -26,9 +26,9 @@ namespace Reversi.Engine.Strategy.Minimax
         /// <summary>
         /// Creates a single node, eg for the root of the tree
         /// </summary>
-        public IReversiTreeNode CreateRootTreeNode(IGameContext context, IGameEngine engine)
+        public IReversiTreeNode CreateRootTreeNode(IGameContext context, IMovePlayer movePlayer)
         {
-            return new ReversiTreeNode(-1, context, engine, this);
+            return new ReversiTreeNode(-1, context, movePlayer, this);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Reversi.Engine.Strategy.Minimax
         /// <param name="context"></param>
         /// <param name="engine"></param>
         /// <returns></returns>
-        public List<IReversiTreeNode> CreateNextTreeNodes(IGameContext context, IGameEngine engine)
+        public List<IReversiTreeNode> CreateNextTreeNodes(IGameContext context, IMovePlayer movePlayer)
         {
             var nodes = new List<IReversiTreeNode>();
             var allMoves = _moveFinder.FindAllValidMoves(context);
@@ -48,19 +48,19 @@ namespace Reversi.Engine.Strategy.Minimax
             {
                 var childContext = context.Clone();
                 var move = moveLocation == -1 ? Move.PassMove : new Move(moveLocation);
-                var response = engine.UpdateBoardWithMove(move, childContext);
-                UpdateContextWithResponse(childContext, response);
-                var childNode = new ReversiTreeNode(moveLocation, childContext, engine, this);
+                var result = movePlayer.PlayMove(move, childContext);
+                UpdateContextWithResult(childContext, result);
+                var childNode = new ReversiTreeNode(moveLocation, childContext, movePlayer, this);
                 nodes.Add(childNode);
             }
             return nodes;
         }
 
-        private void UpdateContextWithResponse(IGameContext childContext, Response response)
+        private void UpdateContextWithResult(IGameContext childContext, MoveResult result)
         {
-            for (int i = 0; i < response.Squares.Length; i++)
+            for (int i = 0; i < result.Context.Squares.Length; i++)
             {
-                childContext.SetPiece(i, response.Squares[i].Piece);
+                childContext.SetPiece(i, result.Context.Squares[i].Piece);
             }
         }
     }

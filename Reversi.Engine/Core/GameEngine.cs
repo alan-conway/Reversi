@@ -19,13 +19,15 @@ namespace Reversi.Engine.Core
         private IStrategyProvider _strategyProvider; 
         private IGameStatusExaminer _statusExaminer;
         private IMoveStrategy _moveStrategy;
+        private IMovePlayer _movePlayer;
 
         public GameEngine(IGameContext context,
             IGameOptions options,
             ICaptureHelper captureHelper,
             IValidMoveFinder validMoveFinder,
             IStrategyProvider strategyProvider,
-            IGameStatusExaminer statusExaminer)
+            IGameStatusExaminer statusExaminer,
+            IMovePlayer movePlayer)
         {
             Context = context;
             _options = options;
@@ -33,6 +35,7 @@ namespace Reversi.Engine.Core
             _validMoveFinder = validMoveFinder;
             _strategyProvider = strategyProvider;
             _statusExaminer = statusExaminer;
+            _movePlayer = movePlayer;
 
             AvailableStrategies = _strategyProvider.GetStrategyInfoCollection();
             ApplyOptions(options);
@@ -96,16 +99,8 @@ namespace Reversi.Engine.Core
         /// <returns>An updated board which reflects pieces captured by the opponent</returns>
         public Response UpdateBoardWithMove(Move move, IGameContext moveContext)
         {
-            if (!move.Pass)
-            {
-                moveContext.SetPiece(move.LocationPlayed, moveContext.CurrentPiece);
-                _captureHelper.CaptureEnemyPieces(moveContext, move.LocationPlayed);
-            }
-            moveContext.SetAllInvalid();
-            moveContext.SetMovePlayed();
-
-            var status = _statusExaminer.DetermineGameStatus(moveContext);
-            return new Response(move, moveContext.Squares, status);
+            var result = _movePlayer.PlayMove(move, moveContext);
+            return new Response(move, result.Context.Squares, result.Status);
         }
 
         /// <summary>
@@ -124,20 +119,10 @@ namespace Reversi.Engine.Core
         /// <returns>An updated board which reflects any captured pieces</returns>
         public Response MakeReplyMove(IGameContext moveContext)
         {
-            var move = _moveStrategy.ChooseMove(moveContext, this);
-            if (!move.Pass)
-            {
-                Context.SetPiece(move.LocationPlayed, moveContext.CurrentPiece);
-                _captureHelper.CaptureEnemyPieces(moveContext, move.LocationPlayed);
-            }
-
-            moveContext.SetMovePlayed();
-
+            var move = _moveStrategy.ChooseMove(moveContext, _movePlayer);
+            var result = _movePlayer.PlayMove(move, moveContext);
             MarkAnyValidMoves();
-
-            var status = _statusExaminer.DetermineGameStatus(moveContext);
-
-            return new Response(move, moveContext.Squares, status);
+            return new Response(move, result.Context.Squares, result.Status);
         }
         
         private static Piece GetEnemyPiece(Piece piece)

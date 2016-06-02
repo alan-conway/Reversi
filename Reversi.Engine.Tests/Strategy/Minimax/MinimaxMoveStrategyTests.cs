@@ -33,9 +33,10 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             fixture.Inject<IGameContext>(fixture.Create<GameContext>());
             fixture.Inject<IValidMoveFinder>(fixture.Create<ValidMoveFinder>());
             fixture.Inject<IGameStatusExaminer>(fixture.Create<GameStatusExaminer>());
-
+            
             var moveFinder = fixture.Freeze<ValidMoveFinder>();
             var statusExaminer = fixture.Freeze<GameStatusExaminer>();
+            var movePlayer = fixture.Freeze<MovePlayer>();
 
             var winLoseHeuristic = fixture.Create<WinLoseHeuristic>();
             var cornerHeuristic = fixture.Create<CornerHeuristic>();
@@ -52,7 +53,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             var strategy = new MinimaxMoveStrategy(minimax, moveFinder, scoreProvider,
                 statusExaminer, treeNodeBuilder);
 
-            fixture.Register<IMoveStrategy>(() => strategy);
+            fixture.Inject<IMoveStrategy>(strategy);
+            fixture.Inject<IMovePlayer>(movePlayer);
 
             var mockStrategyProvider = fixture.Freeze<Mock<IStrategyProvider>>();
             mockStrategyProvider.Setup(sp => sp.GetStrategy(It.IsAny<string>()))
@@ -67,9 +69,8 @@ namespace Reversi.Engine.Tests.Strategy.Minimax
             engine.Context.SetPiece(27, Piece.Black);
             engine.Context.SetMovePlayed();
 
-
             //Act
-            var move = strategy.ChooseMove(engine.Context, engine);
+            var move = strategy.ChooseMove(engine.Context, movePlayer);
 
             //Assert 
             Assert.Equal(18, move.LocationPlayed); // 18 gives white greatest mobility

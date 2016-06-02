@@ -35,7 +35,7 @@ namespace Reversi.Engine.Tests.Strategy.Random
         [InlineAutoData(true)]
         [InlineAutoData(false)]
         public void ShouldReturnPassOnlyIfNoValidMovesAreAvailable(bool areMovesAvailable,
-            Mock<IGameEngine> engine)
+            Mock<IGameContext> context, Mock<IMovePlayer> movePlayer)
         {
             //Arrange            
             _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(It.IsAny<IGameContext>()))
@@ -43,7 +43,7 @@ namespace Reversi.Engine.Tests.Strategy.Random
             bool expectMoveToBePass = !areMovesAvailable;
 
             //Act
-            var move = _strategy.ChooseMove(engine.Object.Context, engine.Object);
+            var move = _strategy.ChooseMove(context.Object, movePlayer.Object);
 
             //Assert
             Assert.Equal(expectMoveToBePass, move.Pass);
@@ -51,14 +51,14 @@ namespace Reversi.Engine.Tests.Strategy.Random
 
         [Theory]
         [InlineAutoData()]
-        public void ShouldReturnReturnMovesRandomly(Mock<IGameEngine> engine)
+        public void ShouldReturnReturnMovesRandomly(Mock<IGameContext> context, Mock<IMovePlayer> movePlayer)
         {
             //Arrange
             _mockValidMoveFinder.Setup(vmf => vmf.FindAllValidMoves(It.IsAny<IGameContext>()))
                 .Returns(new[] { 0, 1, 2 });
 
             //Act
-            _strategy.ChooseMove(engine.Object.Context, engine.Object);
+            _strategy.ChooseMove(context.Object, movePlayer.Object);
 
             //Assert - check that we fetch a random number
             _mockRandom.Verify(r => r.Next(It.IsAny<int>(), It.IsAny<int>()),
