@@ -23,21 +23,24 @@ namespace Reversi.ViewModel
         private IMessageDialogService _dialogService;
         private IStatusMessageFormatter _statusMsgFormatter;
         private IDelayProvider _delayProvider;
+        private IConfigurationService _configService;
 
         public GameViewModel(IEventAggregator eventAggregator, IGameEngine engine, 
             IMessageDialogService dialogService, IStatusMessageFormatter statusMsgFormatter,
-            IDelayProvider delayProvider)
+            IDelayProvider delayProvider, IConfigurationService configService)
         {
             _engine = engine;
             _dialogService = dialogService;
             _statusMsgFormatter = statusMsgFormatter;
             _delayProvider = delayProvider;
+            _configService = configService;
             _gameStatus = GameStatus.NewGame;
             eventAggregator.GetEvent<CellSelectedEvent>().Subscribe(OnCellSelected);
             Board = new BoardViewModel(eventAggregator);
             NewGameCommand = new DelegateCommand(InitialiseNewGame);
             ShowOptionsCommand = new DelegateCommand(ShowOptionsWindow);
-            InitialiseNewGame();
+
+            Initialise();
         }
 
         public BoardViewModel Board { get; set; }
@@ -57,6 +60,12 @@ namespace Reversi.ViewModel
                     Notify();
                 }
             }
+        }
+
+        private void Initialise()
+        {
+            _engine.GameOptions = _configService.GameOptions;
+            InitialiseNewGame();
         }
 
         private void InitialiseNewGame()
@@ -92,7 +101,9 @@ namespace Reversi.ViewModel
             var optionsViewModel = new OptionsViewModel(_engine.GameOptions, _engine.AvailableStrategies);
             if (_dialogService.ShowOptionsDialog(optionsViewModel) == DialogChoice.Ok)
             {
-                _engine.GameOptions = optionsViewModel.ToGameOptions();
+                var newGameOptions = optionsViewModel.ToGameOptions();
+                _engine.GameOptions = newGameOptions;
+                _configService.GameOptions = newGameOptions;
             }
 
             ApplyOptions(_engine.GameOptions);

@@ -80,6 +80,7 @@ namespace Reversi.Startup
             Container.RegisterType<IScoreCalculator, ScoreCalculator>();
             Container.RegisterType<IStatusMessageFormatter, StatusMessageFormatter>();
             Container.RegisterType<IDelayProvider, DelayProvider>();
+            Container.RegisterType<IConfigurationService, ConfigurationService>();
             Container.RegisterType<GameViewModel>();
             Container.RegisterType<OptionsViewModel>();
             Container.RegisterType<GameView>();
