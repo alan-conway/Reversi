@@ -66,6 +66,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
@@ -88,7 +89,9 @@
     </ApplicationDefinition>
     <Compile Include="Converters\BoolToHiddenConverter.cs" />
     <Compile Include="Converters\PieceToVisibilityConverter.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\DelayProvider.cs" />
+    <Compile Include="Services\IConfigurationService.cs" />
     <Compile Include="Services\IDelayProvider.cs" />
     <Compile Include="Services\IScoreCalculator.cs" />
     <Compile Include="Services\IStatusMessageFormatter.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="Services\MessageDialogs\MessageDialogService.cs" />
     <Compile Include="Services\ScoreCalculator.cs" />
     <Compile Include="Services\StatusMessageFormatter.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ViewModel\IDialogViewModel.cs" />
     <Compile Include="ViewModel\OptionsViewModel.cs" />
     <Compile Include="View\GameView.xaml.cs">

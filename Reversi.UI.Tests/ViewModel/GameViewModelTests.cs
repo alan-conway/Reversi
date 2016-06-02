@@ -27,6 +27,7 @@ namespace Reversi.UI.Tests.ViewModel
         private Response _response;
         private Response _responseGameOver;
         private Mock<IMessageDialogService> _mockDialogService;
+        private Mock<IConfigurationService> _mockConfigService;
 
         public GameViewModelTests()
         {
@@ -59,6 +60,9 @@ namespace Reversi.UI.Tests.ViewModel
             var mockDelayProvider = fixture.Freeze<Mock<IDelayProvider>>();
             mockDelayProvider.Setup(dp => dp.Delay(It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
+
+            _mockConfigService = fixture.Freeze<Mock<IConfigurationService>>();
+            _mockConfigService.SetupGet(cs => cs.GameOptions).Returns(fixture.Create<GameOptions>());
 
             _gameViewModel = fixture.Create<GameViewModel>();
 
@@ -266,8 +270,11 @@ namespace Reversi.UI.Tests.ViewModel
 
             //Assert
             _mockGameEngine.VerifySet(ge =>
-                ge.GameOptions = It.Is<IGameOptions>(go => go.UserPlaysAsBlack == userPlaysBlack),
-            Times.Once());
+                ge.GameOptions = It.Is<IGameOptions>(go => 
+                    go.UserPlaysAsBlack == userPlaysBlack &&
+                    go.StrategyName == gameOptions.StrategyName && 
+                    go.StrategyLevel == gameOptions.StrategyLevel),
+            Times.Exactly(1)); 
         }
 
         [Fact]
@@ -289,7 +296,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             //Assert
             _mockGameEngine.VerifySet(ge => ge.GameOptions = It.IsAny<IGameOptions>(),
-                Times.Never());
+                Times.Once); // (once when vm is constructed, but not again now)
         }
 
         [Fact]
@@ -358,6 +365,48 @@ namespace Reversi.UI.Tests.ViewModel
             //Assert
             _mockGameEngine.Verify(ge => ge.CreateNewGame(), Times.Exactly(expectedCalls));
         }
+
+        [Fact]
+        public void ShouldInitialiseGameOptionsOnStartup()
+        {
+            //Arrange - see constructor            
+            //Act - see constructor
+
+            //Assert
+            _mockGameEngine.VerifySet(ge => ge.GameOptions = It.IsAny<IGameOptions>(),
+                Times.Once());
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ShouldSaveNewOptionsWhenOptionsChangesAreSaved(bool userPlaysBlack)
+        {
+            //Arrange
+            var gameOptions = new GameOptions()
+            {
+                StrategyName = "ABC",
+                StrategyLevel = 1,
+                UserPlaysAsBlack = userPlaysBlack
+            };
+            _mockGameEngine.Setup(ge => ge.GameOptions)
+                .Returns(gameOptions);
+
+            var strategyInfo = new StrategyInfo(gameOptions.StrategyName, true, 1);
+            _mockGameEngine.Setup(ge => ge.AvailableStrategies)
+                .Returns(new[] { strategyInfo });
+
+            //Act
+            _gameViewModel.ShowOptionsCommand.Execute(null);
+
+            //Assert
+            _mockConfigService.VerifySet(cs => cs.GameOptions = It.Is<IGameOptions>(go =>
+                    go.UserPlaysAsBlack == userPlaysBlack &&
+                    go.StrategyName == gameOptions.StrategyName &&
+                    go.StrategyLevel == gameOptions.StrategyLevel),
+            Times.Exactly(1));
+        }
+
 
     }
 }
