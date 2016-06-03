@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Reversi.Engine.Helpers
 {
+    /// <summary>
+    /// Plays a move by setting a piece in the game context and 
+    /// capturing enemy pieces
+    /// </summary>
     public class MovePlayer : IMovePlayer
     {
         private ICaptureHelper _captureHelper;
@@ -19,6 +23,13 @@ namespace Reversi.Engine.Helpers
             _statusExaminer = statusExaminer;
         }
 
+        /// <summary>
+        /// Play the move, capture the enemy pieces and return the 
+        /// resulting status of the game
+        /// </summary>
+        /// <returns>
+        /// A MoveResult encapsulating the GameStatus and the GameContext
+        /// </returns>
         public MoveResult PlayMove(Move move, IGameContext moveContext)
         {
             if (!move.Pass)

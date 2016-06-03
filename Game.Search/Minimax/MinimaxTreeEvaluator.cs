@@ -35,28 +35,40 @@ namespace Game.Search.Minimax
         {
             if (isLeafNode(wrappedNode.OriginalTreeNode))
             {
-                var score = scoreProvider.EvaluateScore(wrappedNode.OriginalTreeNode, isPlayer1);
-                UpdateNodeWithScore(wrappedNode, score);
+                UpdateNodeWithScore(wrappedNode, scoreProvider, isPlayer1);
                 return;
             }
 
             foreach (var originalChild in wrappedNode.OriginalTreeNode.GetChildren())
             {
-                var wrappedChild = new WrappedNode(originalChild);
-                wrappedNode.AddChild(wrappedChild);
-            
-                wrappedChild.Alpha = wrappedNode.Alpha;
-                wrappedChild.Beta = wrappedNode.Beta;
+                bool canPrune = EvaluateChildAndRecurse(wrappedNode, originalChild, isLeafNode, 
+                    scoreProvider, isPlayer1);
 
-                CalcScoresForNode(wrappedChild, isLeafNode, scoreProvider, isPlayer1);
-
-                UpdateNodeWithChildResult(wrappedNode, wrappedChild);
-
-                if (wrappedNode.Alpha >= wrappedNode.Beta)
+                if (canPrune)
                 {
                     break;
                 }
             }
+        }
+
+        private bool EvaluateChildAndRecurse(WrappedNode parent, ITreeNode originalChild, Func<ITreeNode, bool> isLeafNode, 
+            IScoreProvider scoreProvider, bool isPlayer1)
+        {
+            var wrappedChild = new WrappedNode(originalChild);
+            parent.AddChild(wrappedChild);
+
+            wrappedChild.Alpha = parent.Alpha;
+            wrappedChild.Beta = parent.Beta;
+
+            CalcScoresForNode(wrappedChild, isLeafNode, scoreProvider, isPlayer1); // nb recursion
+
+            UpdateNodeWithChildResult(parent, wrappedChild);
+
+            if (parent.Alpha >= parent.Beta)
+            {
+                return true;
+            }
+            return false;
         }
 
         private void UpdateNodeWithChildResult(WrappedNode node, WrappedNode childNode)
@@ -71,8 +83,9 @@ namespace Game.Search.Minimax
             }
         }
 
-        private void UpdateNodeWithScore(WrappedNode node, double score)
+        private void UpdateNodeWithScore(WrappedNode node, IScoreProvider scoreProvider, bool isPlayer1)
         {
+            var score = scoreProvider.EvaluateScore(node.OriginalTreeNode, isPlayer1);
             node.Alpha = node.Beta = score;
         }
 

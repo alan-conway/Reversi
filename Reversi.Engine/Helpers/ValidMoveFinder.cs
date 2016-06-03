@@ -27,29 +27,56 @@ namespace Reversi.Engine.Helpers
 
         public bool IsValidMove(IGameContext context, int location, Piece relativePiece)
         {
-            if (context[location].Piece == Piece.None)
+            if (IsLocationEmpty(context, location))
             {
-                Piece current = relativePiece;
-                Piece enemy = relativePiece == Piece.Black ? Piece.White : Piece.Black;
+                return AreEnemyPiecesSandwiched(context, location, relativePiece);
+            }
+            return false;
+        }
 
-                foreach (var relatedSquares in _locationHelper.GetLocationsGroups(location))
+        private bool AreEnemyPiecesSandwiched(IGameContext context, int location, Piece relativePiece)
+        {
+            Piece current = relativePiece;
+            Piece enemy = relativePiece == Piece.Black ? Piece.White : Piece.Black;
+
+            foreach (var relatedSquares in _locationHelper.GetLocationsGroups(location))
+            {
+                if (!IsAdjacentToEnemyPiece(context, enemy, relatedSquares))
                 {
-                    if (relatedSquares.Length == 0 || context[relatedSquares[0]].Piece != enemy)
-                    {
-                        continue;
-                    }
-                    
-                    for(int i = 1; i < relatedSquares.Length; i++)
-                    {
-                        if (context[relatedSquares[i]].Piece == Piece.None)
-                        {
-                            break;
-                        } 
-                        else if (context[relatedSquares[i]].Piece == current)
-                        {
-                            return true;
-                        }
-                    }
+                    continue;
+                }
+                if (IsSandwichingPieceFound(context, relatedSquares, current))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool IsLocationEmpty(IGameContext context, int location)
+        {
+            return context[location].Piece == Piece.None;
+        }
+
+        private static bool IsAdjacentToEnemyPiece(IGameContext context, Piece enemy, int[] relatedSquares)
+        {
+            return relatedSquares.Length != 0 && context[relatedSquares[0]].Piece == enemy;
+        }
+
+        private bool IsSandwichingPieceFound(IGameContext context, int[] relatedSquares, Piece currentPiece)
+        {
+            // to make a valid sandwich, a string of enemy pieces
+            // must have a 'currentPiece' piece at the other end, without
+            // an empty square being encountered
+            for (int i = 1; i < relatedSquares.Length; i++)
+            {
+                if (context[relatedSquares[i]].Piece == Piece.None)
+                {
+                    break;
+                }
+                else if (context[relatedSquares[i]].Piece == currentPiece)
+                {
+                    return true;
                 }
             }
             return false;

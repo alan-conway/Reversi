@@ -75,25 +75,35 @@ namespace Reversi.ViewModel
 
         private void InitialiseNewGame(bool allowPrompt)
         {
-            
-            if (allowPrompt && _gameStatus == GameStatus.InProgress)
+            if (allowPrompt && !ShowPromptIfGameInProgress())
             {
-                if (_dialogService.ShowYesNoDialog("New Game",
-                    "Would you like to start a new game?") != DialogChoice.Yes)
-                {
-                    return;
-                }
+                return;
             }
 
+            ResetCellsInBoard();
+            var response = _engine.CreateNewGame();
+            ProcessResponseFromEngine(response);
+        }
+
+        private bool ShowPromptIfGameInProgress()
+        {
+            if (_gameStatus == GameStatus.InProgress)
+            {
+                var title = "New Game";
+                var message = "Would you like to start a new game?";
+                return _dialogService.ShowYesNoDialog(title, message) == DialogChoice.Yes;
+            }
+            return true;
+        }
+
+        private void ResetCellsInBoard()
+        {
             Board.Cells.ForEach(c =>
             {
                 c.Piece = Piece.None;
                 c.IsValidMove = false;
                 c.IsSelected = false;
             });
-
-            var response = _engine.CreateNewGame();
-            ProcessResponseFromEngine(response);
         }
 
         private void ShowOptionsWindow()
@@ -132,23 +142,37 @@ namespace Reversi.ViewModel
 
             if (response.Status == GameStatus.InProgress)
             {
-                var pauseTask = _delayProvider.Delay(100);
-                var replyMoveTask = _engine.MakeReplyMoveAsync();
+                response = await FetchAndProcessReplyMove(response);
+                await PassIfNoMovesAvailable(response);
+            }
+        }
+        
+        private async Task<Response> FetchAndProcessReplyMove(Response response)
+        {
+            // since the engine can reply 'too quickly' for our original
+            // move to be seen, combine the replyMoveTask with a delay
+            var pauseTask = _delayProvider.Delay(100);
+            var replyMoveTask = _engine.MakeReplyMoveAsync();
 
-                await Task.WhenAll(pauseTask, replyMoveTask);
-                response = replyMoveTask.Result;
-                ProcessResponseFromEngine(response);
+            await Task.WhenAll(pauseTask, replyMoveTask);
+            response = replyMoveTask.Result;
+            ProcessResponseFromEngine(response);
+            return response;
+        }
 
-                if (response.Status == GameStatus.InProgress &&
-                    response.Squares.All(s => !s.IsValidMove))
-                {
-                    await PassMove();
-                }
+        private async Task PassIfNoMovesAvailable(Response response)
+        {
+            if (response.Status == GameStatus.InProgress &&
+                response.Squares.All(s => !s.IsValidMove))
+            {
+                await PassMove();
             }
         }
 
         private async Task PassMove()
         {
+            // since the engine can reply too quickly add a delay 
+            // when passing to deliniate its moves
             await _delayProvider.Delay(250)
                 .ContinueWith(t => PlayMove(Move.PassMove));
         }
@@ -160,17 +184,26 @@ namespace Reversi.ViewModel
         private void ProcessResponseFromEngine(Response response)
         {
             _gameStatus = response.Status;
+            UpdateBoardWithResponseData(response);
+            StatusMessage = _statusMsgFormatter.GetStatusMessage(response.Status, response.Squares);
+        }
+
+        private void UpdateBoardWithResponseData(Response response)
+        {
             for (int i = 0; i < response.Squares.Length; i++)
             {
                 Board.Cells[i].Piece = response.Squares[i].Piece;
                 Board.Cells[i].IsValidMove = response.Squares[i].IsValidMove;
-
-                if (!response.Move.Pass)
-                {
-                    Board.Cells[i].IsSelected = (i == response.Move.LocationPlayed);
-                }
+                UpdateCellSelectedStatus(response, i);
             }
-            StatusMessage = _statusMsgFormatter.GetStatusMessage(response.Status, response.Squares);
+        }
+
+        private void UpdateCellSelectedStatus(Response response, int cellId)
+        {
+            if (!response.Move.Pass)
+            {
+                Board.Cells[cellId].IsSelected = (cellId == response.Move.LocationPlayed);
+            }
         }
 
         private void ApplyOptions(IGameOptions options)

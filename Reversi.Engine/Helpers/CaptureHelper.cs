@@ -49,16 +49,28 @@ namespace Reversi.Engine.Helpers
             Piece piece, Piece enemyPiece, IEnumerable<int> locations)
         {
             var enemyLocations = locations.TakeWhile(l => context[l].Piece == enemyPiece);
+            if (AreEnemyPiecesSandwiched(context, piece, locations, enemyLocations))
+            {
+                CaptureThePieces(context, piece, enemyLocations);
+            }
+        }
+
+        private static bool AreEnemyPiecesSandwiched(IGameContext context, Piece piece, IEnumerable<int> locations, IEnumerable<int> enemyLocations)
+        {
             if (enemyLocations.Any() && enemyLocations.Count() < locations.Count())
             {
                 int nextLocation = locations.ElementAt(enemyLocations.Count());
-                if (context[nextLocation].Piece == piece)
-                {
-                    foreach (int enemyLoc in enemyLocations)
-                    {
-                        context.SetPiece(enemyLoc, piece);
-                    }
-                }
+                bool sandwiched = context[nextLocation].Piece == piece;
+                return sandwiched;
+            }
+            return false;
+        }
+
+        private static void CaptureThePieces(IGameContext context, Piece piece, IEnumerable<int> enemyLocations)
+        {
+            foreach (int enemyLoc in enemyLocations)
+            {
+                context.SetPiece(enemyLoc, piece);
             }
         }
     }

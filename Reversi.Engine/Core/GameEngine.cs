@@ -60,25 +60,28 @@ namespace Reversi.Engine.Core
             //Initialise all to be blank
             Context.Initialise();
 
-            //now set the 2 black, 2 white pieces for the start of a new game
-            Context.SetPiece(28, Piece.Black);
-            Context.SetPiece(35, Piece.Black);
-            Context.SetPiece(27, Piece.White);
-            Context.SetPiece(36, Piece.White);
+            SetStartOfGamePieces();
 
             if (GameOptions.UserPlaysAsBlack)
             {
                 MarkAnyValidMoves();
-                return new Response(Move.PassMove,
-                    Context.Squares,
-                    GameStatus.NewGame);
+                return new Response(Move.PassMove, Context.Squares, GameStatus.NewGame);
             }
             else
             {
                 return MakeReplyMove(Context);
             }
         }
-        
+
+        private void SetStartOfGamePieces()
+        {
+            //Setup the board with the standard opening pieces:
+            Context.SetPiece(28, Piece.Black);
+            Context.SetPiece(35, Piece.Black);
+            Context.SetPiece(27, Piece.White);
+            Context.SetPiece(36, Piece.White);
+        }
+
         public int MoveNumber {  get { return Context.MoveNumber; } }
 
         /// <summary>

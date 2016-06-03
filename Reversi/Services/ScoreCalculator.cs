@@ -19,20 +19,37 @@ namespace Reversi.Services
     {
         public int CalculateScoreForPlayer(Piece player, GameStatus status, Square[] squares)
         {
-            int playerScore = squares.Count(s => s.Piece == player);
-            
-            if (status != GameStatus.InProgress)
+            int playerScore = CountSquaresMatchingPiece(player, squares);
+
+            if (status == GameStatus.InProgress)
             {
-                // convention is to award the empty squares to the victor
-                Piece opponentPiece = player == Piece.Black ? Piece.White : Piece.Black;
-                int opponentScore = squares.Count(s => s.Piece == opponentPiece);
-                if (playerScore > opponentScore)
-                {
-                    playerScore += squares.Count(s => s.Piece == Piece.None);
-                }
+                return playerScore;
             }
 
+            //at the end of the game, award empty squares to the victor
+            playerScore += CountEmptySquaresIfWinner(player, squares, playerScore);
+
             return playerScore;
+        }
+
+        private int CountSquaresMatchingPiece(Piece piece, Square[] squares)
+        {
+            return squares.Count(s => s.Piece == piece);
+        }
+
+        private int CountEmptySquaresIfWinner(Piece player, Square[] squares, int playerScore)
+        {
+            // convention is to award the empty squares to the victor
+            Piece opponentPiece = player == Piece.Black ? Piece.White : Piece.Black;
+            int opponentScore = CountSquaresMatchingPiece(opponentPiece, squares);
+            if (playerScore > opponentScore)
+            {
+                return CountSquaresMatchingPiece(Piece.None, squares);
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }
