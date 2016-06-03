@@ -59,7 +59,7 @@ namespace Reversi.UI.Tests.ViewModel
 
             var mockDelayProvider = fixture.Freeze<Mock<IDelayProvider>>();
             mockDelayProvider.Setup(dp => dp.Delay(It.IsAny<int>()))
-                .Returns(Task.CompletedTask);
+                .Returns(Task.FromResult(0)); //Use Task.CompletedTask in .net 4.6
 
             _mockConfigService = fixture.Freeze<Mock<IConfigurationService>>();
             _mockConfigService.SetupGet(cs => cs.GameOptions).Returns(fixture.Create<GameOptions>());
