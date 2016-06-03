@@ -23,8 +23,8 @@ namespace Reversi.Engine.Strategy.Minimax.Heuristics
         }
 
         /// <summary>
-        /// If the corner is won then score +0.25 
-        /// If the corner is empty then score -0.08 points for each occupied adjacent square
+        /// If the corner is won then score +25 
+        /// If the corner is empty then score -8 points for each occupied adjacent square
         /// </summary>
         /// <param name="context"></param>
         /// <param name="cornerLoc">Location of corner</param>
@@ -38,20 +38,32 @@ namespace Reversi.Engine.Strategy.Minimax.Heuristics
 
             if (cornerPiece != Piece.None)
             {
-                score = 100.0 * PieceValue(cornerPiece, relativePiece);
+                score = ValueTheCornerSquare(relativePiece, cornerPiece);
             }
             else
             {
-                // i.e. the corner is empty
-                for (int i = 0; i < 3; i++)
-                {
-                    var adjacentPiece = context[adjacentLocs[i]].Piece;
-                    score += (-33.33 * PieceValue(adjacentPiece, relativePiece));
-                }
+                score = ValueTheAdjacentSquares(adjacentLocs, context, relativePiece, score);
             }
             score *= 0.25; // 4 corners, so weight each by 0.25
             score = Math.Round(score);
             return (int)score;
+        }
+
+        private double ValueTheCornerSquare(Piece relativePiece, Piece cornerPiece)
+        {
+            return 100.0 * PieceValue(cornerPiece, relativePiece);
+        }
+
+        private double ValueTheAdjacentSquares(int[] adjacentLocs, IGameContext context, Piece relativePiece, double score)
+        {
+            // i.e. the corner is empty
+            var total = 0.0;
+            for (int i = 0; i < 3; i++)
+            {
+                var adjacentPiece = context[adjacentLocs[i]].Piece;
+                total += (-33.33 * PieceValue(adjacentPiece, relativePiece));
+            }
+            return total;
         }
 
         private double PieceValue(Piece piece, Piece relativePiece)

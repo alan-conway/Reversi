@@ -47,31 +47,35 @@ namespace Reversi.Engine.Strategy.Minimax
 
         private List<IEnumerable<int>> GetPreferredOrdering(IGameContext context)
         {
-            var badMovesNearCorners = new List<int>();
-
-            if (context[0].Piece == Piece.None)
-            {
-                badMovesNearCorners.AddRange(new[] { 1, 8, 9 });
-            }
-            if (context[7].Piece == Piece.None)
-            {
-                badMovesNearCorners.AddRange(new[] { 6, 14, 15 });
-            }
-            if (context[56].Piece == Piece.None)
-            {
-                badMovesNearCorners.AddRange(new[] { 48, 49, 57 });
-            }
-            if (context[63].Piece == Piece.None)
-            {
-                badMovesNearCorners.AddRange(new[] { 54, 55, 62 });
-            }
-
+            IEnumerable<int> badMoves = IdentifyBadMoves(context);
             var ordering = new List<IEnumerable<int>>();
             ordering.Add(_corners);
-            ordering.Add(_otherMoves.Except(badMovesNearCorners));
-            ordering.Add(badMovesNearCorners);
-
+            ordering.Add(_otherMoves.Except(badMoves));
+            ordering.Add(badMoves);
             return ordering;
+        }
+
+        private static IEnumerable<int> IdentifyBadMoves(IGameContext context)
+        {
+            var badMoves = new List<int>();
+            badMoves.AddRange(MovesNearEmptyCorner(context, 0, new[] { 1, 8, 9 }));
+            badMoves.AddRange(MovesNearEmptyCorner(context, 7, new[] { 6, 14, 15 }));
+            badMoves.AddRange(MovesNearEmptyCorner(context, 56, new[] { 48, 49, 57 }));
+            badMoves.AddRange(MovesNearEmptyCorner(context, 63, new[] { 54, 55, 62 }));
+            return badMoves;
+        }
+
+        private static IEnumerable<int> MovesNearEmptyCorner(IGameContext context,
+            int cornerLocation, int[] adjacentLocations)
+        {
+            if (context[cornerLocation].Piece == Piece.None)
+            {
+                return adjacentLocations;
+            }
+            else
+            {
+                return new int[0];
+            }
         }
     }
 }

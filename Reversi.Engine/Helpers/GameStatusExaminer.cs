@@ -25,20 +25,25 @@ namespace Reversi.Engine.Helpers
             if (!_validMoveFinder.IsAnyMoveValid(context))
             {
                 //create a hypothetical context to model the next move
-                var futureContext = context.Clone();
-                futureContext.SetMovePlayed();
+                var nextMoveContext = context.Clone();
+                nextMoveContext.SetMovePlayed();
 
-                if (!_validMoveFinder.IsAnyMoveValid(futureContext))
+                if (!_validMoveFinder.IsAnyMoveValid(nextMoveContext))
                 {
                     // i.e. neither player can make another valid move
-                    int numBlack = context.Squares.Count(s => s.Piece == Piece.Black);
-                    int numWhite = context.Squares.Count(s => s.Piece == Piece.White);
-
-                    return (numBlack == numWhite) ? GameStatus.Draw :
-                        (numBlack > numWhite) ? GameStatus.BlackWins : GameStatus.WhiteWins;
+                    return GetFinalGameStatus(context);
                 }
             }
             return GameStatus.InProgress;
+        }
+
+        private static GameStatus GetFinalGameStatus(IGameContext context)
+        {
+            int numBlack = context.Squares.Count(s => s.Piece == Piece.Black);
+            int numWhite = context.Squares.Count(s => s.Piece == Piece.White);
+
+            return (numBlack == numWhite) ? GameStatus.Draw :
+                (numBlack > numWhite) ? GameStatus.BlackWins : GameStatus.WhiteWins;
         }
     }
 }
