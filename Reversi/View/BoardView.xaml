@@ -28,5 +28,43 @@
             </ItemsControl.ItemTemplate>
             
         </ItemsControl>
+
+        <AdornerDecorator>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>            
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>            
+                </Grid.ColumnDefinitions>
+            
+                <Ellipse            
+                    Grid.Row="1" Grid.Column="1"
+                    Height="8" Width="8"
+                    Fill="Black"/>
+                <Ellipse            
+                    Grid.Row="1" Grid.Column="3"
+                    Height="8" Width="8"
+                    Fill="Black"/>
+                <Ellipse            
+                    Grid.Row="3" Grid.Column="1"
+                    Height="8" Width="8"
+                    Fill="Black"/>
+                <Ellipse            
+                    Grid.Row="3" Grid.Column="3"
+                    Height="8" Width="8"
+                    Fill="Black"/>
+            </Grid>
+        </AdornerDecorator>
+
+
     </Grid>
 </UserControl>

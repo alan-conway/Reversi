@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Reversi.View"
              xmlns:conv="clr-namespace:Reversi.Converters"
+             xmlns:sysconv="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -13,20 +14,23 @@
                                      BrushForBlack="Black"
                                      BrushForWhite="Black"/>
         <conv:PieceToVisibilityConverter x:Key="PieceVisibilityConverter"/>
+
+        <sysconv:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
     </UserControl.Resources>
     <Grid>
         <Border>
             <Border.Style>
                 <Style TargetType="Border">
-                    <Setter Property="Background" Value="#30CC30"/>
+                    <Setter Property="Background" Value="#30BB30"/>
                     <Setter Property="BorderBrush" Value="Black"/>
                     <Setter Property="BorderThickness" Value="1.5"/>
-                    <Style.Triggers>                        
+                    <Style.Triggers>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
                             <Setter Property="BorderBrush" Value="White"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsValidMove}" Value="True">
-                            <Setter Property="Background" Value="#108C10"/>
+                            <Setter Property="Cursor" Value="Hand"/>
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="#70FF70"/>
@@ -34,13 +38,25 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
+            <Grid>
                 <Ellipse
-                    Height="30"
-                    Width="30"
+                    Height="35"
+                    Width="35"
                     StrokeThickness="1" 
                     Stroke="{Binding Piece, Converter={StaticResource ResourceKey=PieceStrokeColourConverter}}" 
                     Fill="{Binding Piece, Converter={StaticResource ResourceKey=PieceFillColourConverter}}"
                     Visibility="{Binding Piece, Converter={StaticResource ResourceKey=PieceVisibilityConverter}}"/>
+
+                <Ellipse
+                    Height="8"
+                    Width="8"
+                    StrokeThickness="1" 
+                    Stroke="Gray" 
+                    Fill="Yellow"
+                    Visibility="{Binding IsValidMove, Converter={StaticResource ResourceKey=BoolToVisibilityConverter}}"/>
+
+            </Grid>
+
             <Border.InputBindings>
                 <MouseBinding Gesture="LeftClick" Command="{Binding CellSelected}" />
             </Border.InputBindings>
