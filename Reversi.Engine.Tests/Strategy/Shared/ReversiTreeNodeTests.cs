@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Reversi.Engine.Tests.Strategy.Minimax
+namespace Reversi.Engine.Tests.Strategy.Shared
 {
     public class ReversiTreeNodeTests
     {

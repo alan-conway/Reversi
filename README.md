@@ -65,11 +65,15 @@ Choosing a move for the engine to make is where the fun will be, but for now it 
 
 ### _The AI:_  
 `#TDD`  
-
-The AI within the engine uses a [minimax algorithm with alpha-beta pruning](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html).  
+There are two main AI algorithms to choose from now (aside from the algorithm that chooses a move at random).  
+The first uses a [minimax algorithm with alpha-beta pruning](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html).  
 The idea behind minimax is to look ahead a number of moves and assess which string of moves leads to the best outcome, and the idea behind alpha-beta pruning is to try to find opportunities to speed up that search.  
 As part of this process, I make use of heuristics to assign a score to the state of a game. I found that a reasonable heuristic was assign positive scores to capturing a corner and to better 'mobility', and to assign a negative scores to playing next to an empty corner.  
-I have written in more detail about the AI [in my blog post](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html) if you'd like to read more.
+I have written in more detail about minimax [in my blog post](https://alan-conway.github.io/posts/minimax-with-alpha-beta-pruning.html) if you'd like to read more.   
+The second uses [monte carlo tree search](http://alan-conway.github.io/posts/monte-carlo-tree-search.html) to decide how to reply.  
+Monte carlo tree search works in quite a different way to minimax. The approach here is to identify the set of moves available to play next, and then for each one, playing out the whole game, moving randomly each time, until one side is a winner or the game is drawn. And then repeating this process a large number of times to create a model overall that tells us which move is more likely to lead to a beneficial outcome.  
+This algorithm can be shown to converge to minimax when there are a large number of simulations. In which case, we could ask 'Why not just use the minimax algorithm?'  The answer, interestingly, is that by using monte carlo simulations, we do not have a requirement to supply any heuristics to evaluate the status of the game. It is sufficient to restrict any move to those legally allowed by the rules, and a winning strategy will emerge given enough simulations.  
+I have written in more detail about monte carlo tree search [in my blog post](http://alan-conway.github.io/posts/monte-carlo-tree-search.html) if you'd like to read more.   
 
 
 ### _The GUI:_  

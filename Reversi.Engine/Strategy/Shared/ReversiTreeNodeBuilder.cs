@@ -1,13 +1,13 @@
 ﻿using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Reversi.Engine.Strategy.Minimax
+namespace Reversi.Engine.Strategy.Shared
 {
     /// <summary>
     /// Builds nodes in the game search tree

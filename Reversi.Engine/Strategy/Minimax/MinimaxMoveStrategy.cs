@@ -2,7 +2,7 @@
 using Game.Search.Minimax;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,12 +35,12 @@ namespace Reversi.Engine.Strategy.Minimax
             _treeNodeBuilder = treeNodeBuilder;
             _statusExaminer = statusExaminer;
 
-            StrategyInfo = new StrategyInfo(Name, IsMultiLevel, MaxSearchDepth);
+            SetLevel(1);
         }
 
         public StrategyInfo StrategyInfo { get; private set; }
 
-        public int MaxSearchDepth { get; private set; } = 1;
+        public int MaxSearchDepth { get; private set; }
 
         public void SetLevel(int level)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine.Strategy.Minimax.Interfaces
+namespace Reversi.Engine.Strategy.Shared
 {
     /// <summary>
     /// Builds a node in the game search tree, or 

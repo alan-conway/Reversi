@@ -1,7 +1,7 @@
 ﻿using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
 
-namespace Reversi.Engine.Strategy.Minimax.Interfaces
+namespace Reversi.Engine.Strategy.Shared
 {
     public interface IHeuristic
     {

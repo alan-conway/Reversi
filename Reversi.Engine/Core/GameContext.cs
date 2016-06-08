@@ -15,9 +15,8 @@ namespace Reversi.Engine.Core
     /// </remarks>
     public class GameContext : IGameContext
     {
-
         public GameContext() : this(true)
-        {
+        { 
         }
 
         private GameContext(bool initialise)
@@ -26,6 +25,16 @@ namespace Reversi.Engine.Core
             {
                 Initialise();
             }
+        }
+
+        public void Initialise()
+        {
+            Squares = Enumerable.Range(0, 64)
+                .Select(x => new Square(Piece.None, false))
+                .ToArray();
+            MoveNumber = 1;
+            CurrentPiece = Piece.Black;
+            EnemyPiece = Piece.White;
         }
 
         public Square[] Squares { get; private set; }
@@ -44,16 +53,6 @@ namespace Reversi.Engine.Core
         public void SetValid(int location, bool validity)
         {
             Squares[location].IsValidMove = validity;
-        }
-
-        public void Initialise()
-        {
-            Squares = Enumerable.Range(0, 64)
-                .Select(x => new Square(Piece.None, false))
-                .ToArray();
-            MoveNumber = 1;
-            CurrentPiece = Piece.Black;
-            EnemyPiece = Piece.White;
         }
 
         public Square this[int location]
@@ -83,7 +82,7 @@ namespace Reversi.Engine.Core
             var newContext = new GameContext(false)
             {
                 Squares = new Square[Squares.Length],                
-                MoveNumber = this.MoveNumber,
+                MoveNumber = MoveNumber,
                 CurrentPiece = CurrentPiece,
                 EnemyPiece = EnemyPiece
             };

@@ -77,8 +77,8 @@ namespace Reversi.Engine.Core
         {
             //Setup the board with the standard opening pieces:
             Context.SetPiece(28, Piece.Black);
-            Context.SetPiece(35, Piece.Black);
             Context.SetPiece(27, Piece.White);
+            Context.SetPiece(35, Piece.Black);
             Context.SetPiece(36, Piece.White);
         }
 
