@@ -18,8 +18,10 @@ using Game.Search.Minimax;
 using Reversi.Engine.Core;
 using Reversi.Services;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 using Reversi.Engine.Strategy.Random;
+using Game.Search.MonteCarlo;
+using Reversi.Engine.Strategy.MonteCarlo;
 
 namespace Reversi.Startup
 {
@@ -62,14 +64,22 @@ namespace Reversi.Startup
 
             Container.RegisterType<IMinimaxTreeEvaluator, MinimaxTreeEvaluator>();
             Container.RegisterType<IReversiTreeNodeBuilder, ReversiTreeNodeBuilder>();
+
+            Container.RegisterType<ISelector, Selector>();
+            Container.RegisterType<IExpander, NodeExpander>();
+            Container.RegisterType<ISimulator, MonteCarloPlayoutSimulator>();
+            Container.RegisterType<IRandomMoveStrategy, RandomMoveStrategy>();
+            Container.RegisterType<IMonteCarloTreeEvaluator, MonteCarloTreeEvaluator>();
+            
             Container.RegisterType<IMoveStrategy, MinimaxMoveStrategy>("Minimax");
             Container.RegisterType<IMoveStrategy, RandomMoveStrategy>("Random");
-
+            Container.RegisterType<IMoveStrategy, MonteCarloMoveStrategy>("Monte Carlo");
 
             Container.RegisterType<IStrategyProvider, StrategyProvider>(
                 new InjectionConstructor(
                     new ResolvedArrayParameter<IMoveStrategy>(
-                        new ResolvedParameter<IMoveStrategy>("Minimax"),
+                        new ResolvedParameter<IMoveStrategy>("Minimax"), 
+                        new ResolvedParameter<IMoveStrategy>("Monte Carlo"),
                         new ResolvedParameter<IMoveStrategy>("Random")
                 )));
                 

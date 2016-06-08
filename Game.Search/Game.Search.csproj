@@ -50,6 +50,17 @@
     <Compile Include="Minimax\MinimaxTreeEvaluator.cs" />
     <Compile Include="Minimax\NodeType.cs" />
     <Compile Include="Minimax\WrappedNode.cs" />
+    <Compile Include="MonteCarlo\IExpander.cs" />
+    <Compile Include="MonteCarlo\IMonteCarloTreeEvaluator.cs" />
+    <Compile Include="MonteCarlo\ISelector.cs" />
+    <Compile Include="MonteCarlo\ISimulator.cs" />
+    <Compile Include="MonteCarlo\IUpperConfidenceBoundCalculator.cs" />
+    <Compile Include="MonteCarlo\MonteCarloResult.cs" />
+    <Compile Include="MonteCarlo\MonteCarloTreeEvaluator.cs" />
+    <Compile Include="MonteCarlo\NodeExpander.cs" />
+    <Compile Include="MonteCarlo\NodeType.cs" />
+    <Compile Include="MonteCarlo\Selector.cs" />
+    <Compile Include="MonteCarlo\WrappedNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

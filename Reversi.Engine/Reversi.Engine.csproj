@@ -75,17 +75,19 @@
     <Compile Include="Strategy\Minimax\Heuristics\CornerHeuristic.cs" />
     <Compile Include="Strategy\Minimax\Heuristics\MobilityHeuristic.cs" />
     <Compile Include="Strategy\Minimax\Heuristics\WinLoseHeuristic.cs" />
-    <Compile Include="Strategy\Minimax\Interfaces\IHeuristic.cs" />
-    <Compile Include="Strategy\Minimax\Interfaces\IMoveOrdering.cs" />
-    <Compile Include="Strategy\Minimax\Interfaces\IReversiTreeNode.cs" />
-    <Compile Include="Strategy\Minimax\Interfaces\IReversiTreeNodeBuilder.cs" />
     <Compile Include="Strategy\Minimax\MinimaxMoveStrategy.cs" />
     <Compile Include="Strategy\Minimax\MoveOrdering.cs" />
     <Compile Include="Strategy\Minimax\ReversiScoreProvider.cs" />
-    <Compile Include="Strategy\Minimax\ReversiTreeNode.cs" />
-    <Compile Include="Strategy\Minimax\ReversiTreeNodeBuilder.cs" />
+    <Compile Include="Strategy\MonteCarlo\MonteCarloMoveStrategy.cs" />
+    <Compile Include="Strategy\MonteCarlo\MonteCarloPlayoutSimulator.cs" />
     <Compile Include="Strategy\Random\RandomMoveStrategy.cs" />
     <Compile Include="Helpers\ValidMoveFinder.cs" />
+    <Compile Include="Strategy\Shared\IHeuristic.cs" />
+    <Compile Include="Strategy\Shared\IMoveOrdering.cs" />
+    <Compile Include="Strategy\Shared\IReversiTreeNode.cs" />
+    <Compile Include="Strategy\Shared\IReversiTreeNodeBuilder.cs" />
+    <Compile Include="Strategy\Shared\ReversiTreeNode.cs" />
+    <Compile Include="Strategy\Shared\ReversiTreeNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Game.Search\Game.Search.csproj">
@@ -93,6 +95,7 @@
       <Name>Game.Search</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -105,9 +105,11 @@
     <Compile Include="Strategy\Minimax\MinimaxMoveStrategyTests.cs" />
     <Compile Include="Strategy\Minimax\MoveOrderingTests.cs" />
     <Compile Include="Strategy\Minimax\ReversiScoreProviderTests.cs" />
-    <Compile Include="Strategy\Minimax\ReversiTreeNodeBuilderTests.cs" />
-    <Compile Include="Strategy\Minimax\ReversiTreeNodeTests.cs" />
+    <Compile Include="Strategy\MonteCarlo\MonteCarloMoveStrategyTests.cs" />
+    <Compile Include="Strategy\MonteCarlo\MonteCarloPlayoutSimulatorTests.cs" />
     <Compile Include="Strategy\Random\RandomMoveStrategyTests.cs" />
+    <Compile Include="Strategy\Shared\ReversiTreeNodeBuilderTests.cs" />
+    <Compile Include="Strategy\Shared\ReversiTreeNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

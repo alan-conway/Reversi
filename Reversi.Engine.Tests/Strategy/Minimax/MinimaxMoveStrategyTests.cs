@@ -13,7 +13,7 @@ using Reversi.Engine.Helpers;
 using Reversi.Engine.Interfaces;
 using Reversi.Engine.Strategy.Minimax;
 using Reversi.Engine.Strategy.Minimax.Heuristics;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 using Xunit;
 using Ploeh.AutoFixture.Xunit2;
 

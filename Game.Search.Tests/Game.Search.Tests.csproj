@@ -77,7 +77,13 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Minimax\MinimaxTreeEvaluatorTests.cs" />
+    <Compile Include="MonteCarlo\MonteCarloTreeEvaluatorTests.cs" />
+    <Compile Include="MonteCarlo\NodeExpanderTests.cs" />
+    <Compile Include="MonteCarlo\SelectorTests.cs" />
+    <Compile Include="MonteCarlo\UpperConfidenceBoundTests.cs" />
+    <Compile Include="MonteCarlo\WrappedNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestTreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Game.Search\Game.Search.csproj">

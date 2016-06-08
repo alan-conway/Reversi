@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Reversi.Engine.Core;
 using Reversi.Engine.Interfaces;
-using Reversi.Engine.Strategy.Minimax.Interfaces;
+using Reversi.Engine.Strategy.Shared;
 
 namespace Reversi.Engine.Strategy.Minimax.Heuristics
 {
